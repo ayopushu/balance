@@ -1,96 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Balance App Design System - Exact specification implementation */
 
 @layer base {
   :root {
+    /* Light mode (fallback) */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 1rem;
+    
+    /* Balance App Specific Colors */
+    --balance-background: 240 6% 4%;        /* #0B0B0D */
+    --balance-surface: 240 4% 7%;           /* #121213 */
+    --balance-surface-elevated: 240 4% 10%; /* Elevated surfaces */
+    --balance-text-primary: 0 0% 100%;      /* White titles */
+    --balance-text-secondary: 0 0% 70%;     /* Softer neutral */
+    --balance-text-muted: 0 0% 50%;         /* Muted text */
+    
+    /* Pillar Colors - Exact specification */
+    --health: 145 100% 38%;      /* #00bf63 */
+    --relationships: 318 100% 70%; /* #ff66c4 */
+    --work: 48 100% 67%;         /* #ffde59 */
+    
+    /* Rating Colors */
+    --rating-w: 145 100% 38%;    /* Green - Done */
+    --rating-good: 120 61% 50%;  /* Light Green */
+    --rating-bad: 45 100% 58%;   /* Yellow */
+    --rating-skip: 0 84% 60%;    /* Red */
+    
+    /* Chart Colors */
+    --chart-1: 145 100% 38%;     /* Health */
+    --chart-2: 318 100% 70%;     /* Relationships */
+    --chart-3: 48 100% 67%;      /* Work */
+    --chart-4: 220 70% 50%;      /* Extra */
+    --chart-5: 280 65% 60%;      /* Extra */
   }
 
+  /* Dark mode default - Balance app specification */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 240 6% 4%;              /* #0B0B0D */
+    --foreground: 0 0% 100%;              /* White text */
+    --card: 240 4% 7%;                    /* #121213 */
+    --card-foreground: 0 0% 100%;
+    --popover: 240 4% 7%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 145 100% 38%;              /* Health green as primary */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4% 10%;              /* Elevated surface */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 240 4% 10%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 240 4% 12%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 4% 12%;
+    --input: 240 4% 10%;
+    --ring: 145 100% 38%;
+  }
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+  * {
+    @apply border-border;
+  }
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+  body {
+    @apply bg-balance-background text-balance-text-primary font-inter;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+  html {
+    @apply dark; /* Default to dark mode */
+  }
+}
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+@layer components {
+  /* Balance App Typography */
+  .heading-xl {
+    @apply font-poppins font-bold text-3xl md:text-4xl tracking-tight;
+  }
+  
+  .heading-lg {
+    @apply font-poppins font-semibold text-2xl md:text-3xl tracking-tight;
+  }
+  
+  .heading-md {
+    @apply font-poppins font-semibold text-xl md:text-2xl tracking-tight;
+  }
+  
+  .heading-sm {
+    @apply font-poppins font-medium text-lg md:text-xl;
+  }
+  
+  .body-lg {
+    @apply font-inter font-medium text-base;
+  }
+  
+  .body-md {
+    @apply font-inter font-normal text-sm;
+  }
+  
+  .body-sm {
+    @apply font-inter font-normal text-xs;
+  }
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+  /* Balance App Surfaces */
+  .surface {
+    @apply bg-balance-surface border border-balance-surface-elevated rounded-2xl;
+  }
+  
+  .surface-elevated {
+    @apply bg-balance-surface-elevated border border-balance-surface-elevated rounded-2xl;
+  }
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+  /* Pillar Color Classes */
+  .pillar-health {
+    @apply text-health;
+  }
+  
+  .pillar-relationships {
+    @apply text-relationships;
+  }
+  
+  .pillar-work {
+    @apply text-work;
+  }
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+  .bg-pillar-health {
+    @apply bg-health;
+  }
+  
+  .bg-pillar-relationships {
+    @apply bg-relationships;
+  }
+  
+  .bg-pillar-work {
+    @apply bg-work;
+  }
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  /* Rounded elements everywhere */
+  .rounded-balance {
+    @apply rounded-2xl;
+  }
+  
+  .rounded-balance-sm {
+    @apply rounded-xl;
+  }
+
+  /* Smooth transitions */
+  .transition-balance {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  /* Rating buttons */
+  .rating-w {
+    @apply bg-rating-w text-white;
+  }
+  
+  .rating-good {
+    @apply bg-rating-good text-white;
+  }
+  
+  .rating-bad {
+    @apply bg-rating-bad text-black;
+  }
+  
+  .rating-skip {
+    @apply bg-rating-skip text-white;
+  }
+
+  /* Chart colors */
+  .chart-health {
+    @apply text-chart-1;
+  }
+  
+  .chart-relationships {
+    @apply text-chart-2;
+  }
+  
+  .chart-work {
+    @apply text-chart-3;
   }
 }
 

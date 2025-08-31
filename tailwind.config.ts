@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				poppins: ['Poppins', 'sans-serif'],
+				inter: ['Inter', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -61,7 +65,29 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Balance App Colors
+				'balance-background': 'hsl(var(--balance-background))',
+				'balance-surface': 'hsl(var(--balance-surface))',
+				'balance-surface-elevated': 'hsl(var(--balance-surface-elevated))',
+				'balance-text-primary': 'hsl(var(--balance-text-primary))',
+				'balance-text-secondary': 'hsl(var(--balance-text-secondary))',
+				'balance-text-muted': 'hsl(var(--balance-text-muted))',
+				// Pillar Colors
+				health: 'hsl(var(--health))',
+				relationships: 'hsl(var(--relationships))',
+				work: 'hsl(var(--work))',
+				// Rating Colors
+				'rating-w': 'hsl(var(--rating-w))',
+				'rating-good': 'hsl(var(--rating-good))',
+				'rating-bad': 'hsl(var(--rating-bad))',
+				'rating-skip': 'hsl(var(--rating-skip))',
+				// Chart Colors
+				'chart-1': 'hsl(var(--chart-1))',
+				'chart-2': 'hsl(var(--chart-2))',
+				'chart-3': 'hsl(var(--chart-3))',
+				'chart-4': 'hsl(var(--chart-4))',
+				'chart-5': 'hsl(var(--chart-5))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
