@@ -61,10 +61,10 @@ export interface LogEntry {
 
 export interface Settings {
   userName: string;
-  darkMode: boolean;
   specialRollOver: boolean;
   chartType: 'donut' | 'radar' | 'bar' | 'line';
   notificationsEnabled: boolean;
+  hapticFeedback: boolean;
 }
 
 export interface AppState {

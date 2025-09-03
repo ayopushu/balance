@@ -24,10 +24,10 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 // Default settings
 const defaultSettings: Settings = {
   userName: 'User',
-  darkMode: true,
   specialRollOver: true,
   chartType: 'donut',
   notificationsEnabled: true,
+  hapticFeedback: true,
 };
 
 // Seed data - Default pillars, categories, and subcategories

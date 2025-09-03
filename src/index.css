@@ -1,205 +1,120 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Balance App Design System - Exact specification implementation */
-
 @layer base {
   :root {
-    /* Light mode (fallback) */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 1rem;
+    /* Material 3 Dark Theme - Always Dark Mode */
+    --md-sys-color-background: 222 84% 5%;
+    --md-sys-color-surface: 222 84% 8%;
+    --md-sys-color-surface-variant: 222 30% 15%;
+    --md-sys-color-surface-container: 222 84% 12%;
+    --md-sys-color-surface-container-high: 222 84% 16%;
+    --md-sys-color-surface-container-highest: 222 84% 20%;
     
-    /* Balance App Specific Colors */
-    --balance-background: 240 6% 4%;        /* #0B0B0D */
-    --balance-surface: 240 4% 7%;           /* #121213 */
-    --balance-surface-elevated: 240 4% 10%; /* Elevated surfaces */
-    --balance-text-primary: 0 0% 100%;      /* White titles */
-    --balance-text-secondary: 0 0% 70%;     /* Softer neutral */
-    --balance-text-muted: 0 0% 50%;         /* Muted text */
+    --md-sys-color-on-background: 220 14% 96%;
+    --md-sys-color-on-surface: 220 14% 96%;
+    --md-sys-color-on-surface-variant: 220 9% 72%;
+    --md-sys-color-outline: 220 9% 48%;
+    --md-sys-color-outline-variant: 220 9% 24%;
     
-    /* Pillar Colors - Exact specification */
-    --health: 145 100% 38%;      /* #00bf63 */
-    --relationships: 318 100% 70%; /* #ff66c4 */
-    --work: 48 100% 67%;         /* #ffde59 */
+    /* Primary - Health Green */
+    --md-sys-color-primary: 142 76% 36%;
+    --md-sys-color-on-primary: 0 0% 100%;
+    --md-sys-color-primary-container: 142 100% 8%;
+    --md-sys-color-on-primary-container: 142 76% 85%;
     
-    /* Rating Colors */
-    --rating-w: 145 100% 38%;    /* Green - Done */
-    --rating-good: 120 61% 50%;  /* Light Green */
-    --rating-bad: 45 100% 58%;   /* Yellow */
-    --rating-skip: 0 84% 60%;    /* Red */
+    /* Secondary - Relationships Pink */
+    --md-sys-color-secondary: 320 100% 75%;
+    --md-sys-color-on-secondary: 320 100% 10%;
+    --md-sys-color-secondary-container: 320 100% 12%;
+    --md-sys-color-on-secondary-container: 320 100% 90%;
     
-    /* Chart Colors */
-    --chart-1: 145 100% 38%;     /* Health */
-    --chart-2: 318 100% 70%;     /* Relationships */
-    --chart-3: 48 100% 67%;      /* Work */
-    --chart-4: 220 70% 50%;      /* Extra */
-    --chart-5: 280 65% 60%;      /* Extra */
-  }
-
-  /* Dark mode default - Balance app specification */
-  .dark {
-    --background: 240 6% 4%;              /* #0B0B0D */
-    --foreground: 0 0% 100%;              /* White text */
-    --card: 240 4% 7%;                    /* #121213 */
-    --card-foreground: 0 0% 100%;
-    --popover: 240 4% 7%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 145 100% 38%;              /* Health green as primary */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 4% 10%;              /* Elevated surface */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 240 4% 10%;
-    --muted-foreground: 0 0% 70%;
-    --accent: 240 4% 12%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 240 4% 12%;
-    --input: 240 4% 10%;
-    --ring: 145 100% 38%;
-  }
-
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-balance-background text-balance-text-primary font-inter;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-
-  html {
-    @apply dark; /* Default to dark mode */
-  }
-}
-
-@layer components {
-  /* Balance App Typography */
-  .heading-xl {
-    @apply font-poppins font-bold text-3xl md:text-4xl tracking-tight;
-  }
-  
-  .heading-lg {
-    @apply font-poppins font-semibold text-2xl md:text-3xl tracking-tight;
-  }
-  
-  .heading-md {
-    @apply font-poppins font-semibold text-xl md:text-2xl tracking-tight;
-  }
-  
-  .heading-sm {
-    @apply font-poppins font-medium text-lg md:text-xl;
-  }
-  
-  .body-lg {
-    @apply font-inter font-medium text-base;
-  }
-  
-  .body-md {
-    @apply font-inter font-normal text-sm;
-  }
-  
-  .body-sm {
-    @apply font-inter font-normal text-xs;
-  }
-
-  /* Balance App Surfaces */
-  .surface {
-    @apply bg-balance-surface border border-balance-surface-elevated rounded-2xl;
-  }
-  
-  .surface-elevated {
-    @apply bg-balance-surface-elevated border border-balance-surface-elevated rounded-2xl;
-  }
-
-  /* Pillar Color Classes */
-  .pillar-health {
-    @apply text-health;
-  }
-  
-  .pillar-relationships {
-    @apply text-relationships;
-  }
-  
-  .pillar-work {
-    @apply text-work;
-  }
-
-  .bg-pillar-health {
-    @apply bg-health;
-  }
-  
-  .bg-pillar-relationships {
-    @apply bg-relationships;
-  }
-  
-  .bg-pillar-work {
-    @apply bg-work;
-  }
-
-  /* Rounded elements everywhere */
-  .rounded-balance {
-    @apply rounded-2xl;
-  }
-  
-  .rounded-balance-sm {
-    @apply rounded-xl;
-  }
-
-  /* Smooth transitions */
-  .transition-balance {
-    @apply transition-all duration-200 ease-out;
-  }
-
-  /* Rating buttons */
-  .rating-w {
-    @apply bg-rating-w text-white;
-  }
-  
-  .rating-good {
-    @apply bg-rating-good text-white;
-  }
-  
-  .rating-bad {
-    @apply bg-rating-bad text-black;
-  }
-  
-  .rating-skip {
-    @apply bg-rating-skip text-white;
-  }
-
-  /* Chart colors */
-  .chart-health {
-    @apply text-chart-1;
-  }
-  
-  .chart-relationships {
-    @apply text-chart-2;
-  }
-  
-  .chart-work {
-    @apply text-chart-3;
+    /* Tertiary - Work Yellow */
+    --md-sys-color-tertiary: 45 100% 60%;
+    --md-sys-color-on-tertiary: 45 100% 10%;
+    --md-sys-color-tertiary-container: 45 100% 8%;
+    --md-sys-color-on-tertiary-container: 45 100% 85%;
+    
+    /* Error */
+    --md-sys-color-error: 0 100% 67%;
+    --md-sys-color-on-error: 0 0% 100%;
+    --md-sys-color-error-container: 0 100% 8%;
+    --md-sys-color-on-error-container: 0 100% 95%;
+    
+    /* Health pillar colors */
+    --health: 142 76% 36%;
+    --health-container: 142 100% 8%;
+    --on-health-container: 142 76% 85%;
+    
+    /* Relationships pillar colors */
+    --relationships: 320 100% 75%;
+    --relationships-container: 320 100% 12%;
+    --on-relationships-container: 320 100% 90%;
+    
+    /* Work pillar colors */
+    --work: 45 100% 60%;
+    --work-container: 45 100% 8%;
+    --on-work-container: 45 100% 85%;
+    
+    /* Surface tints */
+    --surface-tint: var(--md-sys-color-primary);
+    
+    /* Elevation tokens */
+    --elevation-1: 0 1px 3px 0 hsl(0 0% 0% / 0.12);
+    --elevation-2: 0 2px 6px 2px hsl(0 0% 0% / 0.15);
+    --elevation-3: 0 4px 8px 3px hsl(0 0% 0% / 0.15);
+    --elevation-4: 0 6px 10px 4px hsl(0 0% 0% / 0.15);
+    --elevation-5: 0 8px 12px 6px hsl(0 0% 0% / 0.15);
+    
+    /* Shape tokens */
+    --shape-corner-extra-small: 4px;
+    --shape-corner-small: 8px;
+    --shape-corner-medium: 12px;
+    --shape-corner-large: 16px;
+    --shape-corner-extra-large: 28px;
+    
+    /* Motion tokens */
+    --motion-duration-short1: 50ms;
+    --motion-duration-short2: 100ms;
+    --motion-duration-short3: 150ms;
+    --motion-duration-short4: 200ms;
+    --motion-duration-medium1: 250ms;
+    --motion-duration-medium2: 300ms;
+    --motion-duration-medium3: 350ms;
+    --motion-duration-medium4: 400ms;
+    --motion-duration-long1: 450ms;
+    --motion-duration-long2: 500ms;
+    --motion-duration-long3: 550ms;
+    --motion-duration-long4: 600ms;
+    
+    --motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+    --motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+    --motion-easing-decelerated: cubic-bezier(0, 0, 0, 1);
+    --motion-easing-accelerated: cubic-bezier(0.3, 0, 1, 1);
+    
+    /* Legacy shadcn variables for compatibility */
+    --background: var(--md-sys-color-background);
+    --foreground: var(--md-sys-color-on-background);
+    --card: var(--md-sys-color-surface-container);
+    --card-foreground: var(--md-sys-color-on-surface);
+    --popover: var(--md-sys-color-surface-container-high);
+    --popover-foreground: var(--md-sys-color-on-surface);
+    --primary: var(--md-sys-color-primary);
+    --primary-foreground: var(--md-sys-color-on-primary);
+    --secondary: var(--md-sys-color-secondary-container);
+    --secondary-foreground: var(--md-sys-color-on-secondary-container);
+    --muted: var(--md-sys-color-surface-variant);
+    --muted-foreground: var(--md-sys-color-on-surface-variant);
+    --accent: var(--md-sys-color-surface-container);
+    --accent-foreground: var(--md-sys-color-on-surface);
+    --destructive: var(--md-sys-color-error);
+    --destructive-foreground: var(--md-sys-color-on-error);
+    --border: var(--md-sys-color-outline-variant);
+    --input: var(--md-sys-color-outline-variant);
+    --ring: var(--md-sys-color-outline);
+    --radius: var(--shape-corner-medium);
   }
 }
 
@@ -207,8 +122,158 @@
   * {
     @apply border-border;
   }
-
+  
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  /* Material 3 Typography Scale */
+  .display-large {
+    @apply text-6xl font-normal leading-tight tracking-tight;
+  }
+  
+  .display-medium {
+    @apply text-5xl font-normal leading-tight tracking-tight;
+  }
+  
+  .display-small {
+    @apply text-4xl font-normal leading-tight tracking-tight;
+  }
+  
+  .headline-large {
+    @apply text-3xl font-normal leading-snug tracking-tight;
+  }
+  
+  .headline-medium {
+    @apply text-2xl font-normal leading-snug tracking-tight;
+  }
+  
+  .headline-small {
+    @apply text-xl font-normal leading-snug tracking-tight;
+  }
+  
+  .title-large {
+    @apply text-lg font-medium leading-normal tracking-tight;
+  }
+  
+  .title-medium {
+    @apply text-base font-medium leading-normal tracking-normal;
+  }
+  
+  .title-small {
+    @apply text-sm font-medium leading-normal tracking-normal;
+  }
+  
+  .body-large {
+    @apply text-base font-normal leading-relaxed tracking-normal;
+  }
+  
+  .body-medium {
+    @apply text-sm font-normal leading-relaxed tracking-normal;
+  }
+  
+  .body-small {
+    @apply text-xs font-normal leading-relaxed tracking-normal;
+  }
+  
+  .label-large {
+    @apply text-sm font-medium leading-normal tracking-wide;
+  }
+  
+  .label-medium {
+    @apply text-xs font-medium leading-normal tracking-wide;
+  }
+  
+  .label-small {
+    @apply text-xs font-medium leading-normal tracking-wide;
+  }
+  
+  /* Surface utilities */
+  .surface {
+    @apply bg-[hsl(var(--md-sys-color-surface))] text-[hsl(var(--md-sys-color-on-surface))];
+  }
+  
+  .surface-container {
+    @apply bg-[hsl(var(--md-sys-color-surface-container))] text-[hsl(var(--md-sys-color-on-surface))];
+  }
+  
+  .surface-container-high {
+    @apply bg-[hsl(var(--md-sys-color-surface-container-high))] text-[hsl(var(--md-sys-color-on-surface))];
+  }
+  
+  .surface-container-highest {
+    @apply bg-[hsl(var(--md-sys-color-surface-container-highest))] text-[hsl(var(--md-sys-color-on-surface))];
+  }
+  
+  .surface-variant {
+    @apply bg-[hsl(var(--md-sys-color-surface-variant))] text-[hsl(var(--md-sys-color-on-surface-variant))];
+  }
+  
+  /* Elevation utilities */
+  .elevation-1 {
+    box-shadow: var(--elevation-1);
+  }
+  
+  .elevation-2 {
+    box-shadow: var(--elevation-2);
+  }
+  
+  .elevation-3 {
+    box-shadow: var(--elevation-3);
+  }
+  
+  .elevation-4 {
+    box-shadow: var(--elevation-4);
+  }
+  
+  .elevation-5 {
+    box-shadow: var(--elevation-5);
+  }
+  
+  /* Shape utilities */
+  .rounded-xs {
+    border-radius: var(--shape-corner-extra-small);
+  }
+  
+  .rounded-sm {
+    border-radius: var(--shape-corner-small);
+  }
+  
+  .rounded-md {
+    border-radius: var(--shape-corner-medium);
+  }
+  
+  .rounded-lg {
+    border-radius: var(--shape-corner-large);
+  }
+  
+  .rounded-xl {
+    border-radius: var(--shape-corner-extra-large);
+  }
+  
+  /* Motion utilities */
+  .motion-standard {
+    transition-timing-function: var(--motion-easing-standard);
+    transition-duration: var(--motion-duration-medium2);
+  }
+  
+  .motion-emphasized {
+    transition-timing-function: var(--motion-easing-emphasized);
+    transition-duration: var(--motion-duration-medium4);
+  }
+  
+  .motion-decelerated {
+    transition-timing-function: var(--motion-easing-decelerated);
+    transition-duration: var(--motion-duration-medium2);
+  }
+  
+  .motion-accelerated {
+    transition-timing-function: var(--motion-easing-accelerated);
+    transition-duration: var(--motion-duration-short4);
   }
 }

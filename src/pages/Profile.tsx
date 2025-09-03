@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { User, BarChart3, Settings, Moon, Sun, Palette, Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
+import { User, BarChart3, Settings, Zap, Palette, Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -58,14 +58,12 @@ export const Profile: React.FC = () => {
     });
   };
 
-  // Handle theme toggle
-  const handleThemeToggle = (checked: boolean) => {
-    updateSettings({ darkMode: checked });
-    // Apply theme to document
-    document.documentElement.classList.toggle('dark', checked);
+  // Handle haptic feedback toggle
+  const handleHapticToggle = (checked: boolean) => {
+    updateSettings({ hapticFeedback: checked });
     toast({
-      title: `${checked ? 'Dark' : 'Light'} mode enabled`,
-      description: `Switched to ${checked ? 'dark' : 'light'} theme.`,
+      title: `Haptic feedback ${checked ? 'enabled' : 'disabled'}`,
+      description: `Touch feedback is now ${checked ? 'on' : 'off'}.`,
     });
   };
 
@@ -241,26 +239,22 @@ export const Profile: React.FC = () => {
               </h3>
               
               <div className="space-y-6">
-                {/* Theme toggle */}
+                {/* Haptic feedback */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    {settings.darkMode ? (
-                      <Moon className="w-5 h-5 text-balance-text-secondary" />
-                    ) : (
-                      <Sun className="w-5 h-5 text-balance-text-secondary" />
-                    )}
+                    <Zap className="w-5 h-5 text-balance-text-secondary" />
                     <div>
                       <Label className="body-md text-balance-text-primary">
-                        Dark Mode
+                        Haptic Feedback
                       </Label>
                       <p className="body-sm text-balance-text-muted">
-                        Switch between light and dark themes
+                        Feel vibrations on interactions
                       </p>
                     </div>
                   </div>
                   <Switch
-                    checked={settings.darkMode}
-                    onCheckedChange={handleThemeToggle}
+                    checked={settings.hapticFeedback}
+                    onCheckedChange={handleHapticToggle}
                   />
                 </div>
 
