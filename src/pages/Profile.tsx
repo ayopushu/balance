@@ -1,50 +1,24 @@
 /**
- * Profile Screen - User settings, analytics access, and data management
- * Shows user info, settings, and analytics CTA
+ * Profile Screen - Simplified with username and analytics CTA
+ * Shows themed design with username management and analytics access
  */
 
 import React, { useState } from 'react';
-import { User, BarChart3, Settings, Zap, Palette, Download, Upload, RotateCcw, AlertTriangle } from 'lucide-react';
+import { User, BarChart3, Edit2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 export const Profile: React.FC = () => {
-  const {
-    settings,
-    updateSettings,
-    pillars,
-    resetData,
-    exportData,
-    importData,
-  } = useBalanceStore();
-  
+  const navigate = useNavigate();
+  const { settings, updateSettings, pillars } = useBalanceStore();
   const { toast } = useToast();
 
-  const [showResetDialog, setShowResetDialog] = useState(false);
-  const [resetStep, setResetStep] = useState(0);
-  const [resetConfirmText, setResetConfirmText] = useState('');
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(settings.userName);
 
@@ -57,96 +31,6 @@ export const Profile: React.FC = () => {
       description: "Your name has been saved successfully.",
     });
   };
-
-  // Handle haptic feedback toggle
-  const handleHapticToggle = (checked: boolean) => {
-    updateSettings({ hapticFeedback: checked });
-    toast({
-      title: `Haptic feedback ${checked ? 'enabled' : 'disabled'}`,
-      description: `Touch feedback is now ${checked ? 'on' : 'off'}.`,
-    });
-  };
-
-  // Handle data export
-  const handleExport = () => {
-    try {
-      const data = exportData();
-      const blob = new Blob([data], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `balance-backup-${new Date().toISOString().split('T')[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Data exported",
-        description: "Your Balance data has been downloaded successfully.",
-      });
-    } catch (error) {
-      toast({
-        title: "Export failed",
-        description: "There was an error exporting your data.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Handle data import
-  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const data = e.target?.result as string;
-        const success = importData(data);
-        
-        if (success) {
-          toast({
-            title: "Data imported",
-            description: "Your Balance data has been restored successfully.",
-          });
-        } else {
-          throw new Error('Invalid data format');
-        }
-      } catch (error) {
-        toast({
-          title: "Import failed",
-          description: "The file format is invalid or corrupted.",
-          variant: "destructive",
-        });
-      }
-    };
-    reader.readAsText(file);
-    
-    // Reset file input
-    event.target.value = '';
-  };
-
-  // Handle reset confirmation
-  const handleResetStep = () => {
-    if (resetStep === 0) {
-      setResetStep(1);
-    } else if (resetStep === 1) {
-      setResetStep(2);
-    } else if (resetStep === 2 && resetConfirmText === 'RESET') {
-      resetData();
-      setShowResetDialog(false);
-      setResetStep(0);
-      setResetConfirmText('');
-      toast({
-        title: "Data reset",
-        description: "All your data has been reset to defaults.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const canProceedReset = resetStep < 2 || resetConfirmText === 'RESET';
 
   return (
     <div className="min-h-screen bg-balance-background">
@@ -165,22 +49,29 @@ export const Profile: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <Card className="surface p-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-health to-relationships rounded-full flex items-center justify-center">
-                  <User className="w-8 h-8 text-white" />
+            <Card className="surface p-8">
+              <div className="flex flex-col items-center space-y-6">
+                {/* Themed Avatar */}
+                <div className="relative">
+                  <div className="w-24 h-24 bg-gradient-to-br from-health via-relationships to-work rounded-full flex items-center justify-center shadow-lg">
+                    <User className="w-12 h-12 text-white" />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-balance-surface border-2 border-balance-background rounded-full flex items-center justify-center">
+                    <div className="w-3 h-3 bg-health rounded-full animate-pulse" />
+                  </div>
                 </div>
                 
-                <div className="flex-1">
+                {/* Name Section */}
+                <div className="text-center">
                   {editingName ? (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-3">
                       <Input
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
-                        className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm"
+                        className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance text-center"
                         autoFocus
                       />
-                      <Button onClick={handleNameUpdate} size="sm">
+                      <Button onClick={handleNameUpdate} size="sm" className="bg-health hover:bg-health/90 text-white">
                         Save
                       </Button>
                       <Button 
@@ -196,19 +87,39 @@ export const Profile: React.FC = () => {
                     </div>
                   ) : (
                     <div>
-                      <h2 className="heading-md text-balance-text-primary">
+                      <h2 className="heading-lg text-balance-text-primary mb-2">
                         {settings.userName}
                       </h2>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditingName(true)}
-                        className="text-balance-text-muted hover:text-balance-text-primary p-0 h-auto"
+                        className="text-balance-text-muted hover:text-balance-text-primary"
                       >
+                        <Edit2 className="w-4 h-4 mr-2" />
                         Edit name
                       </Button>
                     </div>
                   )}
+                </div>
+
+                {/* Pillar Quick Stats */}
+                <div className="flex space-x-6">
+                  {pillars.slice(0, 3).map((pillar, index) => (
+                    <motion.div
+                      key={pillar.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * (index + 1), duration: 0.3 }}
+                      className="text-center"
+                    >
+                      <div 
+                        className="w-8 h-8 rounded-full mx-auto mb-2"
+                        style={{ backgroundColor: pillar.color }}
+                      />
+                      <div className="body-sm text-balance-text-muted">{pillar.name}</div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </Card>
@@ -218,208 +129,58 @@ export const Profile: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.3 }}
-          >
-            <Button className="w-full bg-gradient-to-r from-health to-relationships text-white rounded-balance h-16 text-lg font-semibold hover:opacity-90 transition-balance">
-              <BarChart3 className="w-6 h-6 mr-3" />
-              Check My Balance
-            </Button>
-          </motion.div>
-
-          {/* Settings */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}
+            className="space-y-4"
           >
-            <Card className="surface p-6">
-              <h3 className="heading-sm text-balance-text-primary mb-4 flex items-center">
-                <Settings className="w-5 h-5 mr-2" />
-                Settings
-              </h3>
-              
-              <div className="space-y-6">
-                {/* Haptic feedback */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Zap className="w-5 h-5 text-balance-text-secondary" />
-                    <div>
-                      <Label className="body-md text-balance-text-primary">
-                        Haptic Feedback
-                      </Label>
-                      <p className="body-sm text-balance-text-muted">
-                        Feel vibrations on interactions
-                      </p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={settings.hapticFeedback}
-                    onCheckedChange={handleHapticToggle}
-                  />
-                </div>
-
-                {/* Chart type preference */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <BarChart3 className="w-5 h-5 text-balance-text-secondary" />
-                    <div>
-                      <Label className="body-md text-balance-text-primary">
-                        Analytics Chart Type
-                      </Label>
-                      <p className="body-sm text-balance-text-muted">
-                        Default chart view for analytics
-                      </p>
-                    </div>
-                  </div>
-                  <Select
-                    value={settings.chartType}
-                    onValueChange={(value: 'donut' | 'radar' | 'bar' | 'line') => 
-                      updateSettings({ chartType: value })
-                    }
-                  >
-                    <SelectTrigger className="w-[120px] bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="donut">Donut</SelectItem>
-                      <SelectItem value="radar">Radar</SelectItem>
-                      <SelectItem value="bar">Bar</SelectItem>
-                      <SelectItem value="line">Line</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Special rollover */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <RotateCcw className="w-5 h-5 text-balance-text-secondary" />
-                    <div>
-                      <Label className="body-md text-balance-text-primary">
-                        Special Rollover
-                      </Label>
-                      <p className="body-sm text-balance-text-muted">
-                        Move missed specials to next day
-                      </p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={settings.specialRollOver}
-                    onCheckedChange={(checked) => 
-                      updateSettings({ specialRollOver: checked })
-                    }
-                  />
-                </div>
+            <Button 
+              onClick={() => navigate('/analytics')}
+              className="w-full bg-gradient-to-r from-health via-relationships to-work text-white rounded-balance h-20 text-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <BarChart3 className="w-8 h-8 mr-3" />
+              <div className="flex flex-col">
+                <span>Check My Balance</span>
+                <span className="text-sm opacity-90">View your analytics & progress</span>
               </div>
-            </Card>
+            </Button>
+
+            {/* Animated background elements */}
+            <div className="relative overflow-hidden rounded-balance bg-gradient-to-r from-health/10 via-relationships/10 to-work/10 p-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-health/5 via-relationships/5 to-work/5 animate-pulse" />
+              <div className="relative">
+                <h3 className="heading-sm text-balance-text-primary mb-2">Your Balance Journey</h3>
+                <p className="body-md text-balance-text-secondary">
+                  Track your progress across all life pillars and discover insights about your daily balance.
+                </p>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Data Management */}
+          {/* Decorative Elements */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="grid grid-cols-3 gap-4 mt-8"
           >
-            <Card className="surface p-6">
-              <h3 className="heading-sm text-balance-text-primary mb-4">
-                Data Management
-              </h3>
-              
-              <div className="space-y-4">
-                {/* Export data */}
-                <Button
-                  variant="outline"
-                  onClick={handleExport}
-                  className="w-full justify-start text-balance-text-primary border-balance-surface-elevated rounded-balance hover:bg-balance-surface-elevated"
+            {[
+              { color: 'health', icon: '🌱', label: 'Wellness' },
+              { color: 'relationships', icon: '💝', label: 'Connection' },
+              { color: 'work', icon: '⚡', label: 'Achievement' },
+            ].map((item, index) => (
+              <Card key={item.color} className="surface p-4 text-center hover-scale">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.7 + index * 0.1, type: 'spring', stiffness: 200 }}
                 >
-                  <Download className="w-5 h-5 mr-3" />
-                  Export JSON Backup
-                </Button>
-
-                {/* Import data */}
-                <div>
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={handleImport}
-                    className="hidden"
-                    id="import-file"
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={() => document.getElementById('import-file')?.click()}
-                    className="w-full justify-start text-balance-text-primary border-balance-surface-elevated rounded-balance hover:bg-balance-surface-elevated"
-                  >
-                    <Upload className="w-5 h-5 mr-3" />
-                    Import JSON Backup
-                  </Button>
-                </div>
-
-                {/* Reset data */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowResetDialog(true)}
-                  className="w-full justify-start text-red-500 border-red-500/20 rounded-balance hover:bg-red-500/10"
-                >
-                  <AlertTriangle className="w-5 h-5 mr-3" />
-                  Reset All Data
-                </Button>
-              </div>
-            </Card>
+                  <div className="text-3xl mb-2">{item.icon}</div>
+                  <div className="body-sm text-balance-text-muted">{item.label}</div>
+                </motion.div>
+              </Card>
+            ))}
           </motion.div>
         </div>
       </ScrollArea>
-
-      {/* Reset confirmation dialog */}
-      <Dialog open={showResetDialog} onOpenChange={setShowResetDialog}>
-        <DialogContent className="bg-balance-surface border-balance-surface-elevated">
-          <DialogHeader>
-            <DialogTitle className="text-red-500 flex items-center">
-              <AlertTriangle className="w-5 h-5 mr-2" />
-              {resetStep === 0 && "Reset All Data?"}
-              {resetStep === 1 && "Are you absolutely sure?"}
-              {resetStep === 2 && "Final Confirmation"}
-            </DialogTitle>
-            <DialogDescription className="text-balance-text-secondary">
-              {resetStep === 0 && "This will permanently delete all your Balance data including pillars, tasks, logs, and settings."}
-              {resetStep === 1 && "This action cannot be undone. All your progress, analytics, and custom configurations will be lost forever."}
-              {resetStep === 2 && "Type 'RESET' below to confirm this irreversible action."}
-            </DialogDescription>
-          </DialogHeader>
-
-          {resetStep === 2 && (
-            <div className="py-4">
-              <Input
-                value={resetConfirmText}
-                onChange={(e) => setResetConfirmText(e.target.value)}
-                placeholder="Type RESET to confirm"
-                className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm"
-              />
-            </div>
-          )}
-
-          <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setShowResetDialog(false);
-                setResetStep(0);
-                setResetConfirmText('');
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleResetStep}
-              disabled={!canProceedReset}
-            >
-              {resetStep === 0 && "Continue"}
-              {resetStep === 1 && "I understand"}
-              {resetStep === 2 && "Reset Everything"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -6,6 +6,7 @@
 import React, { useEffect } from 'react';
 import { format } from 'date-fns';
 import { Settings, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBalanceStore } from '@/store';
@@ -13,6 +14,7 @@ import { PillarCard } from '@/components/PillarCard';
 import { motion } from 'framer-motion';
 
 export const Balance: React.FC = () => {
+  const navigate = useNavigate();
   const {
     selectedDate,
     pillars,
@@ -86,6 +88,7 @@ export const Balance: React.FC = () => {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => navigate('/settings')}
               className="text-balance-text-muted hover:text-balance-text-primary"
             >
               <Settings className="w-5 h-5" />
@@ -151,44 +154,6 @@ export const Balance: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Summary stats */}
-          {dayItems.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-8 p-6 surface rounded-balance"
-            >
-              <h3 className="heading-sm text-balance-text-primary mb-4">
-                Today's Summary
-              </h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-health">
-                    {dayItems.filter(item => item.status === 'done').length}
-                  </div>
-                  <div className="body-sm text-balance-text-muted">Completed</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-work">
-                    {dayItems.filter(item => item.status === 'pending').length}
-                  </div>
-                  <div className="body-sm text-balance-text-muted">Remaining</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-relationships">
-                    {Math.round(
-                      dayItems.reduce((sum, item) => {
-                        const stats = getPillarStats(item.pillarId);
-                        return sum + stats.totalMinutes;
-                      }, 0) / pillars.length
-                    )}
-                  </div>
-                  <div className="body-sm text-balance-text-muted">Avg Minutes</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
         </div>
       </ScrollArea>
     </div>

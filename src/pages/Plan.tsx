@@ -5,12 +5,29 @@
 
 import React, { useState } from 'react';
 import { format, startOfWeek, addDays, isBefore, startOfDay } from 'date-fns';
-import { ChevronLeft, ChevronRight, Plus, Edit3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Edit3, Clock, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
+import type { DayItem } from '@/store/types';
 
 export const Plan: React.FC = () => {
   const {
@@ -18,13 +35,26 @@ export const Plan: React.FC = () => {
     setSelectedDate,
     getDayPlan,
     generateDayPlan,
+    updateDayItem,
     pillars,
     getCategoriesByPillar,
+    categories,
   } = useBalanceStore();
 
   const [weekStart, setWeekStart] = useState(() => 
     startOfWeek(new Date(selectedDate), { weekStartsOn: 0 }) // Sunday start
   );
+
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingItem, setEditingItem] = useState<DayItem | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: '',
+    start: '',
+    end: '',
+    categoryId: '',
+    subcategoryId: '',
+    isSpecial: false,
+  });
 
   const today = startOfDay(new Date());
 
@@ -84,6 +114,38 @@ export const Plan: React.FC = () => {
       completed: dayPlan.items.filter(item => item.status === 'done').length,
       pillars: pillarStats,
     };
+  };
+
+  // Handle edit item
+  const handleEditItem = (item: DayItem) => {
+    setEditingItem(item);
+    setEditForm({
+      title: item.title,
+      start: item.start || '',
+      end: item.end || '',
+      categoryId: item.categoryId || '',
+      subcategoryId: item.subcategoryId || '',
+      isSpecial: item.isSpecial || false,
+    });
+    setShowEditDialog(true);
+  };
+
+  // Save edit changes
+  const handleSaveEdit = () => {
+    if (!editingItem) return;
+    
+    updateDayItem(selectedDate, editingItem.id, {
+      ...editingItem,
+      title: editForm.title,
+      start: editForm.start || undefined,
+      end: editForm.end || undefined,
+      categoryId: editForm.categoryId || undefined,
+      subcategoryId: editForm.subcategoryId || undefined,
+      isSpecial: editForm.isSpecial,
+    });
+    
+    setShowEditDialog(false);
+    setEditingItem(null);
   };
 
   const selectedDateObj = new Date(selectedDate);
@@ -209,6 +271,7 @@ export const Plan: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowEditDialog(true)}
               className="text-balance-text-muted hover:text-balance-text-primary border-balance-surface-elevated rounded-balance"
             >
               <Edit3 className="w-4 h-4 mr-2" />
@@ -240,35 +303,41 @@ export const Plan: React.FC = () => {
                     </span>
                   </div>
                   
-                  <div className="space-y-2">
-                    {pillarItems.map((item) => (
-                      <div 
-                        key={item.id}
-                        className="flex items-center justify-between p-2 surface-elevated rounded-balance-sm"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div 
-                            className={`w-3 h-3 rounded-full ${
-                              item.status === 'done' ? 'bg-green-500' : 
-                              item.status === 'skipped' ? 'bg-red-500' : 
-                              'bg-balance-text-muted opacity-30'
-                            }`}
-                          />
-                          <span className={`body-md ${
-                            item.status === 'done' ? 'text-balance-text-muted line-through' : 'text-balance-text-primary'
-                          }`}>
-                            {item.title}
-                          </span>
-                        </div>
-                        
-                        {item.start && item.end && (
-                          <span className="body-sm text-balance-text-muted">
-                            {item.start}–{item.end}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                   <div className="space-y-2">
+                     {pillarItems.map((item) => (
+                       <div 
+                         key={item.id}
+                         className="flex items-center justify-between p-2 surface-elevated rounded-balance-sm hover:bg-balance-surface-elevated cursor-pointer transition-balance"
+                         onClick={() => handleEditItem(item)}
+                       >
+                         <div className="flex items-center space-x-3">
+                           <div 
+                             className={`w-3 h-3 rounded-full ${
+                               item.status === 'done' ? 'bg-green-500' : 
+                               item.status === 'skipped' ? 'bg-red-500' : 
+                               'bg-balance-text-muted opacity-30'
+                             }`}
+                           />
+                           <span className={`body-md ${
+                             item.status === 'done' ? 'text-balance-text-muted line-through' : 'text-balance-text-primary'
+                           }`}>
+                             {item.title}
+                           </span>
+                           {item.isSpecial && (
+                             <span className="px-2 py-1 text-xs bg-work text-white rounded-full">
+                               Special
+                             </span>
+                           )}
+                         </div>
+                         
+                         {item.start && item.end && (
+                           <span className="body-sm text-balance-text-muted">
+                             {item.start}–{item.end}
+                           </span>
+                         )}
+                       </div>
+                     ))}
+                   </div>
                 </Card>
               );
             })}
@@ -288,9 +357,96 @@ export const Plan: React.FC = () => {
               <Plus className="w-5 h-5 mr-2" />
               Generate Day Plan
             </Button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+           </div>
+         )}
+       </div>
+
+       {/* Edit Day Dialog */}
+       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+         <DialogContent className="bg-balance-surface border-balance-surface-elevated max-w-md">
+           <DialogHeader>
+             <DialogTitle className="text-balance-text-primary">Edit Task</DialogTitle>
+           </DialogHeader>
+
+           <div className="space-y-4 py-4">
+             <div>
+               <Label className="body-md text-balance-text-primary">Task Title</Label>
+               <Input
+                 value={editForm.title}
+                 onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                 className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2"
+                 placeholder="Enter task title"
+               />
+             </div>
+
+             <div className="grid grid-cols-2 gap-4">
+               <div>
+                 <Label className="body-md text-balance-text-primary">Start Time</Label>
+                 <Input
+                   type="time"
+                   value={editForm.start}
+                   onChange={(e) => setEditForm({ ...editForm, start: e.target.value })}
+                   className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2"
+                 />
+               </div>
+               <div>
+                 <Label className="body-md text-balance-text-primary">End Time</Label>
+                 <Input
+                   type="time"
+                   value={editForm.end}
+                   onChange={(e) => setEditForm({ ...editForm, end: e.target.value })}
+                   className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2"
+                 />
+               </div>
+             </div>
+
+             <div>
+               <Label className="body-md text-balance-text-primary">Category</Label>
+               <Select 
+                 value={editForm.categoryId} 
+                 onValueChange={(value) => setEditForm({ ...editForm, categoryId: value, subcategoryId: '' })}
+               >
+                 <SelectTrigger className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2">
+                   <SelectValue placeholder="Select category" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   {categories.map((category) => (
+                     <SelectItem key={category.id} value={category.id}>
+                       {category.name}
+                     </SelectItem>
+                   ))}
+                 </SelectContent>
+               </Select>
+             </div>
+
+             <div className="flex items-center space-x-2">
+               <input
+                 type="checkbox"
+                 id="isSpecial"
+                 checked={editForm.isSpecial}
+                 onChange={(e) => setEditForm({ ...editForm, isSpecial: e.target.checked })}
+                 className="rounded"
+               />
+               <Label htmlFor="isSpecial" className="body-md text-balance-text-primary">
+                 Mark as special activity
+               </Label>
+             </div>
+           </div>
+
+           <DialogFooter>
+             <Button variant="ghost" onClick={() => setShowEditDialog(false)}>
+               Cancel
+             </Button>
+             <Button 
+               onClick={handleSaveEdit}
+               className="bg-health hover:bg-health/90 text-white"
+               disabled={!editForm.title.trim()}
+             >
+               Save Changes
+             </Button>
+           </DialogFooter>
+         </DialogContent>
+       </Dialog>
+     </div>
+   );
+ };

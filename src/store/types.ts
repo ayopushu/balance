@@ -39,8 +39,9 @@ export interface DayItem {
   start?: string; // HH:MM format
   end?: string; // HH:MM format
   minutes?: number;
-  status: 'pending' | 'done' | 'skipped' | 'partial';
-  rating?: 'W' | 'Good' | 'Bad' | 'L';
+  status: 'pending' | 'done' | 'skipped';
+  rating?: number; // 1-5 rating for completed items
+  isSpecial?: boolean; // special activity flag
 }
 
 export interface DayPlan {
@@ -54,7 +55,7 @@ export interface LogEntry {
   pillarId: string;
   categoryId: string;
   subcategoryId?: string;
-  rating: 'W' | 'Good' | 'Bad' | 'L';
+  rating: number;
   minutes: number;
   timestamp: number; // Unix timestamp
 }
@@ -98,7 +99,7 @@ export interface AppState {
   
   generateDayPlan: (date: string) => void;
   updateDayItem: (date: string, itemId: string, updates: Partial<DayItem>) => void;
-  completeDayItem: (date: string, itemId: string, rating: 'W' | 'Good' | 'Bad' | 'L', minutes?: number) => void;
+  completeDayItem: (date: string, itemId: string, rating: number, minutes?: number) => void;
   
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
   

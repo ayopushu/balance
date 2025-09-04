@@ -78,9 +78,6 @@ export const PillarCard: React.FC<PillarCardProps> = ({
               <span className="body-md text-balance-text-secondary">
                 {totalMinutesToday}min today
               </span>
-              <span className="body-md text-balance-text-secondary">
-                {percentageToday.toFixed(1)}% of day
-              </span>
             </div>
           </div>
 
