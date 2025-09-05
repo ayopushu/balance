@@ -17,6 +17,7 @@ import type {
   Settings,
   PILLAR_COLORS 
 } from './types';
+import { RATING_WEIGHTS } from './types';
 
 // Generate unique ID
 const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -221,14 +222,14 @@ export const useBalanceStore = create<AppState>()(
         }
         finalMinutes = finalMinutes || 0;
         
-        // Create log entry
+        // Create log entry with numeric rating
         const logEntry: LogEntry = {
           id: generateId(),
           date,
           pillarId: item.pillarId,
           categoryId: item.categoryId,
           subcategoryId: item.subcategoryId,
-          rating,
+          rating: RATING_WEIGHTS[rating],
           minutes: finalMinutes,
           timestamp: Date.now(),
         };

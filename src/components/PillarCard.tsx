@@ -37,19 +37,28 @@ export const PillarCard: React.FC<PillarCardProps> = ({
   // Get pillar color class
   const getPillarColorClass = (pillarId: string) => {
     switch (pillarId) {
-      case 'health': return 'pillar-health';
-      case 'relationships': return 'pillar-relationships';
-      case 'work': return 'pillar-work';
+      case 'health': return 'text-health';
+      case 'relationships': return 'text-relationships';
+      case 'work': return 'text-work';
       default: return 'text-primary';
     }
   };
 
   const getBgPillarColorClass = (pillarId: string) => {
     switch (pillarId) {
-      case 'health': return 'bg-pillar-health';
-      case 'relationships': return 'bg-pillar-relationships';
-      case 'work': return 'bg-pillar-work';
-      default: return 'bg-primary';
+      case 'health': return 'bg-health/20';
+      case 'relationships': return 'bg-relationships/20';
+      case 'work': return 'bg-work/20';
+      default: return 'bg-primary/20';
+    }
+  };
+
+  const getBorderPillarColorClass = (pillarId: string) => {
+    switch (pillarId) {
+      case 'health': return 'border-health/30';
+      case 'relationships': return 'border-relationships/30';
+      case 'work': return 'border-work/30';
+      default: return 'border-primary/30';
     }
   };
 
@@ -58,23 +67,19 @@ export const PillarCard: React.FC<PillarCardProps> = ({
   const maxValue = Math.max(...sparklineData);
 
   return (
-    <Card className="surface p-4 transition-balance">
+    <Card className={`surface p-0 border-2 ${getBorderPillarColorClass(pillar.id)} ${getBgPillarColorClass(pillar.id)} transition-balance overflow-hidden`}>
       {/* Pillar Header */}
-      <Button
-        variant="ghost"
-        onClick={onToggleExpand}
-        className="w-full justify-between p-0 h-auto hover:bg-transparent"
-      >
+      <div className="p-4 border-b border-balance-surface-elevated">
         <div className="flex items-center space-x-4">
           {/* Color indicator */}
-          <div className={`w-4 h-4 rounded-full ${getBgPillarColorClass(pillar.id)}`} />
+          <div className={`w-6 h-6 rounded-full ${pillar.id === 'health' ? 'bg-health' : pillar.id === 'relationships' ? 'bg-relationships' : 'bg-work'} shadow-lg`} />
           
           {/* Pillar info */}
-          <div className="flex-1 text-left">
-            <h3 className={`heading-sm ${getPillarColorClass(pillar.id)}`}>
+          <div className="flex-1 text-left min-w-0">
+            <h3 className={`heading-md ${getPillarColorClass(pillar.id)} font-semibold truncate`}>
               {pillar.name}
             </h3>
-            <div className="flex items-center space-x-4 mt-1">
+            <div className="flex items-center space-x-2 mt-1">
               <span className="body-md text-balance-text-secondary">
                 {totalMinutesToday}min today
               </span>
@@ -82,56 +87,38 @@ export const PillarCard: React.FC<PillarCardProps> = ({
           </div>
 
           {/* Mini sparkline */}
-          <div className="flex items-end space-x-1 h-8">
+          <div className="flex items-end space-x-1 h-10 flex-shrink-0">
             {sparklineData.map((value, index) => (
               <div
                 key={index}
-                className={`w-1 ${getBgPillarColorClass(pillar.id)} rounded-full opacity-60`}
+                className={`w-2 ${pillar.id === 'health' ? 'bg-health' : pillar.id === 'relationships' ? 'bg-relationships' : 'bg-work'} rounded-full shadow-sm`}
                 style={{
-                  height: `${Math.max(4, (value / maxValue) * 32)}px`,
+                  height: `${Math.max(6, (value / maxValue) * 40)}px`,
                 }}
               />
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Expand/collapse chevron */}
-        <motion.div
-          animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <ChevronDown className="h-5 w-5 text-balance-text-muted" />
-        </motion.div>
-      </Button>
-
-      {/* Expandable categories */}
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="mt-4 space-y-2"
-          >
-            {categories.map((category) => {
-              const categoryItems = dayItems.filter(item => item.categoryId === category.id);
-              const isExpanded = expandedCategories.includes(category.id);
-              
-              return (
-                <CategoryRow
-                  key={category.id}
-                  category={category}
-                  dayItems={categoryItems}
-                  isExpanded={isExpanded}
-                  onToggleExpand={() => onCategoryToggle(category.id)}
-                  pillarColor={pillar.color}
-                />
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Always visible categories */}
+      <div className="p-4 space-y-3">
+        {categories.map((category) => {
+          const categoryItems = dayItems.filter(item => item.categoryId === category.id);
+          const isExpanded = expandedCategories.includes(category.id);
+          
+          return (
+            <CategoryRow
+              key={category.id}
+              category={category}
+              dayItems={categoryItems}
+              isExpanded={isExpanded}
+              onToggleExpand={() => onCategoryToggle(category.id)}
+              pillarColor={pillar.color}
+            />
+          );
+        })}
+      </div>
     </Card>
   );
 };

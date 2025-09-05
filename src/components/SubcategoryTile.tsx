@@ -93,12 +93,9 @@ export const SubcategoryTile: React.FC<SubcategoryTileProps> = ({
 
   const timeDisplay = getTimeDisplay();
 
-  // Get completion progress (for partial completions)
+  // Get completion progress (for done tasks)
   const getProgressPercentage = () => {
     if (dayItem.status === 'done') return 100;
-    if (dayItem.status === 'partial' && dayItem.minutes && estimatedMinutes > 0) {
-      return Math.min(100, (dayItem.minutes / estimatedMinutes) * 100);
-    }
     return 0;
   };
 
@@ -121,13 +118,13 @@ export const SubcategoryTile: React.FC<SubcategoryTileProps> = ({
         />
 
         {/* Task info */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <h5 className={`body-lg ${
               dayItem.status === 'done' 
                 ? 'text-balance-text-muted line-through' 
                 : 'text-balance-text-primary'
-            } font-medium`}>
+            } font-medium truncate mr-2`}>
               {dayItem.title}
             </h5>
             
@@ -137,19 +134,19 @@ export const SubcategoryTile: React.FC<SubcategoryTileProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={handleUndo}
-                className="text-balance-text-muted hover:text-balance-text-primary"
+                className="text-balance-text-muted hover:text-balance-text-primary flex-shrink-0"
               >
                 <X className="w-4 h-4 mr-1" />
-                Undo
+                <span className="hidden sm:inline">Undo</span>
               </Button>
             )}
           </div>
 
           {/* Time and progress info */}
-          <div className="flex items-center space-x-3 mt-1">
+          <div className="flex items-center space-x-2 mt-1 flex-wrap">
             {timeDisplay && (
               <div className="flex items-center space-x-1 text-balance-text-muted">
-                <Clock className="w-3 h-3" />
+                <Clock className="w-3 h-3 flex-shrink-0" />
                 <span className="body-sm">{timeDisplay}</span>
               </div>
             )}
@@ -162,7 +159,7 @@ export const SubcategoryTile: React.FC<SubcategoryTileProps> = ({
 
             {/* Rating display */}
             {dayItem.rating && (
-              <span className={`body-sm px-2 py-1 rounded-full ${
+              <span className={`body-sm px-2 py-1 rounded-full flex-shrink-0 ${
                 dayItem.rating === 'W' ? 'rating-w' :
                 dayItem.rating === 'Good' ? 'rating-good' :
                 dayItem.rating === 'Bad' ? 'rating-bad' :

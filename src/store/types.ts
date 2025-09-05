@@ -40,7 +40,7 @@ export interface DayItem {
   end?: string; // HH:MM format
   minutes?: number;
   status: 'pending' | 'done' | 'skipped';
-  rating?: number; // 1-5 rating for completed items
+  rating?: 'W' | 'Good' | 'Bad' | 'L'; // Rating type for completed items
   isSpecial?: boolean; // special activity flag
 }
 
@@ -99,7 +99,7 @@ export interface AppState {
   
   generateDayPlan: (date: string) => void;
   updateDayItem: (date: string, itemId: string, updates: Partial<DayItem>) => void;
-  completeDayItem: (date: string, itemId: string, rating: number, minutes?: number) => void;
+  completeDayItem: (date: string, itemId: string, rating: 'W' | 'Good' | 'Bad' | 'L', minutes?: number) => void;
   
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
   

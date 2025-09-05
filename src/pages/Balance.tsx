@@ -31,12 +31,18 @@ export const Balance: React.FC = () => {
   const displayDate = new Date(selectedDate);
   const isToday = selectedDate === today;
 
-  // Generate day plan if it doesn't exist
+  // Generate day plan if it doesn't exist and set all pillars as expanded
   useEffect(() => {
     if (!getDayPlan(selectedDate)) {
       generateDayPlan(selectedDate);
     }
-  }, [selectedDate, getDayPlan, generateDayPlan]);
+    // Ensure all pillars are expanded on Balance tab
+    pillars.forEach(pillar => {
+      if (!expandedPillars.includes(pillar.id)) {
+        togglePillarExpanded(pillar.id);
+      }
+    });
+  }, [selectedDate, getDayPlan, generateDayPlan, pillars, expandedPillars, togglePillarExpanded]);
 
   const dayPlan = getDayPlan(selectedDate);
   const dayItems = dayPlan?.items || [];

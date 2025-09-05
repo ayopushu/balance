@@ -64,62 +64,53 @@ export const Profile: React.FC = () => {
                 {/* Name Section */}
                 <div className="text-center">
                   {editingName ? (
-                    <div className="flex items-center space-x-3">
+                    <div className="flex flex-col items-center space-y-3 w-full max-w-xs mx-auto">
                       <Input
                         value={newName}
                         onChange={(e) => setNewName(e.target.value)}
-                        className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance text-center"
+                        className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance text-center w-full"
                         autoFocus
+                        placeholder="Enter your name"
                       />
-                      <Button onClick={handleNameUpdate} size="sm" className="bg-health hover:bg-health/90 text-white">
-                        Save
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => {
-                          setEditingName(false);
-                          setNewName(settings.userName);
-                        }}
-                      >
-                        Cancel
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button onClick={handleNameUpdate} size="sm" className="bg-health hover:bg-health/90 text-white rounded-balance">
+                          Save
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setEditingName(false);
+                            setNewName(settings.userName);
+                          }}
+                          className="rounded-balance"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div>
-                      <h2 className="heading-lg text-balance-text-primary mb-2">
+                      <h2 className="heading-lg text-balance-text-primary mb-3 truncate max-w-xs mx-auto">
                         {settings.userName}
                       </h2>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditingName(true)}
-                        className="text-balance-text-muted hover:text-balance-text-primary"
+                        className="text-balance-text-muted hover:text-balance-text-primary rounded-balance px-6"
                       >
-                        <Edit2 className="w-4 h-4 mr-2" />
                         Edit name
                       </Button>
                     </div>
                   )}
                 </div>
 
-                {/* Pillar Quick Stats */}
-                <div className="flex space-x-6">
-                  {pillars.slice(0, 3).map((pillar, index) => (
-                    <motion.div
-                      key={pillar.id}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 * (index + 1), duration: 0.3 }}
-                      className="text-center"
-                    >
-                      <div 
-                        className="w-8 h-8 rounded-full mx-auto mb-2"
-                        style={{ backgroundColor: pillar.color }}
-                      />
-                      <div className="body-sm text-balance-text-muted">{pillar.name}</div>
-                    </motion.div>
-                  ))}
+                {/* Decorative dots only */}
+                <div className="flex items-center justify-center space-x-3">
+                  <div className="w-3 h-3 bg-health rounded-full animate-pulse" />
+                  <div className="w-3 h-3 bg-relationships rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  <div className="w-3 h-3 bg-work rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
                 </div>
               </div>
             </Card>
