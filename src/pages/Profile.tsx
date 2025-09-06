@@ -91,16 +91,16 @@ export const Profile: React.FC = () => {
                     </div>
                   ) : (
                     <div>
-                      <h2 className="heading-lg text-balance-text-primary mb-3 truncate max-w-xs mx-auto">
+                      <h2 className="text-xl font-semibold text-balance-text-primary mb-3 truncate max-w-xs mx-auto">
                         {settings.userName}
                       </h2>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setEditingName(true)}
-                        className="text-balance-text-muted hover:text-balance-text-primary rounded-balance px-6"
+                        className="text-sm text-balance-text-muted hover:text-balance-text-primary bg-balance-surface-elevated/50 hover:bg-balance-surface-elevated rounded-lg px-4 py-2 font-medium transition-all"
                       >
-                        Edit name
+                        Edit Name
                       </Button>
                     </div>
                   )}
@@ -135,41 +135,17 @@ export const Profile: React.FC = () => {
             </Button>
 
             {/* Animated background elements */}
-            <div className="relative overflow-hidden rounded-balance bg-gradient-to-r from-health/10 via-relationships/10 to-work/10 p-6">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-health/10 via-relationships/10 to-work/10 p-4">
               <div className="absolute inset-0 bg-gradient-to-r from-health/5 via-relationships/5 to-work/5 animate-pulse" />
               <div className="relative">
-                <h3 className="heading-sm text-balance-text-primary mb-2">Your Balance Journey</h3>
-                <p className="body-md text-balance-text-secondary">
-                  Track your progress across all life pillars and discover insights about your daily balance.
+                <h3 className="text-sm font-medium text-balance-text-primary mb-1">Your Balance Journey</h3>
+                <p className="text-xs text-balance-text-secondary">
+                  Track your progress across life pillars and discover daily balance insights.
                 </p>
               </div>
             </div>
           </motion.div>
 
-          {/* Decorative Elements */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="grid grid-cols-3 gap-4 mt-8"
-          >
-            {[
-              { color: 'health', icon: '🌱', label: 'Wellness' },
-              { color: 'relationships', icon: '💝', label: 'Connection' },
-              { color: 'work', icon: '⚡', label: 'Achievement' },
-            ].map((item, index) => (
-              <Card key={item.color} className="surface p-4 text-center hover-scale">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.7 + index * 0.1, type: 'spring', stiffness: 200 }}
-                >
-                  <div className="text-3xl mb-2">{item.icon}</div>
-                  <div className="body-sm text-balance-text-muted">{item.label}</div>
-                </motion.div>
-              </Card>
-            ))}
-          </motion.div>
         </div>
       </ScrollArea>
     </div>

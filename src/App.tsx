@@ -8,17 +8,11 @@ import { Plan } from "./pages/Plan";
 import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
 import { Analytics } from "./pages/Analytics";
-import { initializeApp } from "./store";
-import { useEffect } from "react";
 import { BottomNavigation } from "./components/BottomNavigation";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  useEffect(() => {
-    initializeApp();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

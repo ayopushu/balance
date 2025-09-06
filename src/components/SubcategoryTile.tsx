@@ -55,7 +55,7 @@ export const SubcategoryTile: React.FC<SubcategoryTileProps> = ({
   };
 
   // Handle rating selection
-  const handleRating = (rating: 'W' | 'Good' | 'Bad' | 'L', minutes?: number) => {
+  const handleRating = (rating: 'win' | 'good' | 'bad' | 'skip', minutes?: number) => {
     const finalMinutes = minutes || estimatedMinutes;
     completeDayItem(selectedDate, dayItem.id, rating, finalMinutes);
     setShowRatingSheet(false);
@@ -160,13 +160,13 @@ export const SubcategoryTile: React.FC<SubcategoryTileProps> = ({
             {/* Rating display */}
             {dayItem.rating && (
               <span className={`body-sm px-2 py-1 rounded-full flex-shrink-0 ${
-                dayItem.rating === 'W' ? 'rating-w' :
-                dayItem.rating === 'Good' ? 'rating-good' :
-                dayItem.rating === 'Bad' ? 'rating-bad' :
+                dayItem.rating === 'win' ? 'rating-w' :
+                dayItem.rating === 'good' ? 'rating-good' :
+                dayItem.rating === 'bad' ? 'rating-bad' :
                 'rating-skip'
               }`}>
-                {dayItem.rating === 'W' ? 'Done' :
-                 dayItem.rating === 'L' ? 'Skip' :
+                {dayItem.rating === 'win' ? 'Done' :
+                 dayItem.rating === 'skip' ? 'Skip' :
                  dayItem.rating}
               </span>
             )}

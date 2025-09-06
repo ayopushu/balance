@@ -40,7 +40,7 @@ export interface DayItem {
   end?: string; // HH:MM format
   minutes?: number;
   status: 'pending' | 'done' | 'skipped';
-  rating?: 'W' | 'Good' | 'Bad' | 'L'; // Rating type for completed items
+  rating?: 'win' | 'good' | 'bad' | 'skip'; // Rating type for completed items
   isSpecial?: boolean; // special activity flag
 }
 
@@ -99,7 +99,7 @@ export interface AppState {
   
   generateDayPlan: (date: string) => void;
   updateDayItem: (date: string, itemId: string, updates: Partial<DayItem>) => void;
-  completeDayItem: (date: string, itemId: string, rating: 'W' | 'Good' | 'Bad' | 'L', minutes?: number) => void;
+  completeDayItem: (date: string, itemId: string, rating: 'win' | 'good' | 'bad' | 'skip', minutes?: number) => void;
   
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
   
@@ -148,11 +148,11 @@ export interface ChartData {
 }
 
 // Rating weights for quality calculations
-export const RATING_WEIGHTS: Record<'W' | 'Good' | 'Bad' | 'L', number> = {
-  W: 1.0,
-  Good: 0.7,
-  Bad: 0.3,
-  L: 0.0,
+export const RATING_WEIGHTS: Record<'win' | 'good' | 'bad' | 'skip', number> = {
+  win: 1.0,
+  good: 0.7,
+  bad: 0.3,
+  skip: 0.0,
 };
 
 // Default pillar colors

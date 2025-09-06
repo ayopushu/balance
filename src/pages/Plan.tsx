@@ -245,114 +245,118 @@ export const Plan: React.FC = () => {
             })}
           </div>
 
-          {/* Selected day content */}
-          <Card className="surface p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="heading-md text-balance-text-primary mb-2">
-                  {format(selectedDateObj, 'EEEE, MMMM d')}
-                </h2>
-                {selectedDayPlan && selectedDayPlan.items.length > 0 && (
-                  <p className="body-md text-balance-text-secondary">
-                    {selectedDayPlan.items.filter(item => item.status === 'done').length} of {selectedDayPlan.items.length} tasks completed
-                  </p>
-                )}
-              </div>
-              
-              {!isDayPast(selectedDateObj) && (
-                <Button 
-                  onClick={() => generateDayPlan(selectedDate)}
-                  className="bg-health hover:bg-health/90 text-white rounded-balance"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Regenerate Plan
-                </Button>
+          {/* Selected day content - Pillar Cards */}
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <h2 className="text-lg font-medium text-balance-text-primary mb-1">
+                {format(selectedDateObj, 'EEEE, MMMM d')}
+              </h2>
+              {selectedDayPlan && selectedDayPlan.items.length > 0 && (
+                <p className="text-sm text-balance-text-secondary">
+                  {selectedDayPlan.items.filter(item => item.status === 'done').length} of {selectedDayPlan.items.length} tasks completed
+                </p>
               )}
             </div>
 
-            {/* Day plan items */}
-            {selectedDayPlan && selectedDayPlan.items.length > 0 ? (
-              <div className="space-y-3">
-                {selectedDayPlan.items.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center justify-between p-4 surface-elevated rounded-balance hover:bg-balance-surface-elevated/50 transition-balance"
+            {/* Pillar cards with tasks */}
+            {pillars.map((pillar) => {
+              const pillarItems = selectedDayPlan?.items.filter(item => item.pillarId === pillar.id) || [];
+              if (pillarItems.length === 0) return null;
+
+              return (
+                <Card key={pillar.id} className="surface p-4">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer p-2 rounded-lg hover:bg-balance-surface-elevated/50 transition-all"
+                    style={{ borderLeft: `4px solid ${pillar.color}` }}
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3">
-                        <div 
-                          className="w-3 h-3 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: pillars.find(p => p.id === item.pillarId)?.color }}
-                        />
-                        <h4 className="body-lg font-medium text-balance-text-primary truncate">
-                          {item.title}
-                        </h4>
-                        {item.isSpecial && (
-                          <span className="body-sm px-2 py-1 bg-work/20 text-work rounded-full flex-shrink-0">
-                            Special
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center space-x-3 mt-1 ml-6">
-                        {item.start && item.end && (
-                          <div className="flex items-center space-x-1 text-balance-text-muted">
-                            <Clock className="w-3 h-3" />
-                            <span className="body-sm">{item.start}–{item.end}</span>
-                          </div>
-                        )}
-                        
-                        <span className={`body-sm px-2 py-1 rounded-full ${
-                          item.status === 'done' 
-                            ? 'bg-health/20 text-health' 
-                            : item.status === 'skipped'
-                            ? 'bg-red-500/20 text-red-400'
-                            : 'bg-balance-text-muted/20 text-balance-text-muted'
-                        }`}>
-                          {item.status === 'done' ? 'Completed' : item.status === 'skipped' ? 'Skipped' : 'Pending'}
-                        </span>
-                      </div>
+                    <div className="flex items-center space-x-3">
+                      <div 
+                        className="w-4 h-4 rounded-full"
+                        style={{ backgroundColor: pillar.color }}
+                      />
+                      <h3 className="text-base font-medium text-balance-text-primary">
+                        {pillar.name}
+                      </h3>
+                      <span className="text-xs px-2 py-1 bg-balance-surface-elevated rounded-full text-balance-text-muted">
+                        {pillarItems.length} tasks
+                      </span>
                     </div>
-                    
-                    {!isDayPast(selectedDateObj) && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditItem(item)}
-                        className="text-balance-text-muted hover:text-balance-text-primary flex-shrink-0"
+                  </div>
+                  
+                  <div className="mt-3 space-y-2">
+                    {pillarItems.map((item) => (
+                      <div 
+                        key={item.id}
+                        className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                          item.status === 'done' 
+                            ? 'bg-health/10 border-health/20 line-through opacity-70' 
+                            : item.status === 'skipped'
+                            ? 'bg-red-500/10 border-red-500/20 line-through opacity-70'
+                            : 'bg-balance-surface-elevated/50 border-balance-surface-elevated hover:bg-balance-surface-elevated'
+                        }`}
                       >
-                        <Edit3 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center py-12"
-              >
-                <h3 className="heading-md text-balance-text-secondary mb-4">
-                  No tasks planned for this day
-                </h3>
-                <p className="body-md text-balance-text-muted mb-6">
-                  Generate a day plan based on your pillar templates.
-                </p>
-                {!isDayPast(selectedDateObj) && (
-                  <Button
-                    onClick={() => generateDayPlan(selectedDate)}
-                    className="bg-health hover:bg-health/90 text-white rounded-balance"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Generate Day Plan
-                  </Button>
-                )}
-              </motion.div>
-            )}
-          </Card>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm font-medium text-balance-text-primary truncate">
+                              {item.title}
+                            </span>
+                            {item.rating && (
+                              <span className={`text-xs px-2 py-1 rounded-full ${
+                                item.rating === 'win' ? 'bg-yellow-500/20 text-yellow-400' :
+                                item.rating === 'good' ? 'bg-green-500/20 text-green-400' :
+                                item.rating === 'bad' ? 'bg-yellow-600/20 text-yellow-600' :
+                                'bg-red-500/20 text-red-400'
+                              }`}>
+                                {item.rating === 'win' ? 'W' : item.rating === 'good' ? 'Good' : item.rating === 'bad' ? 'Bad' : 'L'}
+                              </span>
+                            )}
+                          </div>
+                          {item.start && item.end && (
+                            <div className="flex items-center space-x-1 text-balance-text-muted mt-1">
+                              <Clock className="w-3 h-3" />
+                              <span className="text-xs">{item.start}–{item.end}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {!isDayPast(selectedDateObj) && item.status === 'pending' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditItem(item)}
+                            className="text-balance-text-muted hover:text-balance-text-primary flex-shrink-0 ml-2"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              );
+            })}
+            
+            {!selectedDayPlan || selectedDayPlan.items.length === 0 ? (
+              <Card className="surface p-8">
+                <div className="text-center">
+                  <h3 className="text-lg font-medium text-balance-text-secondary mb-2">
+                    No tasks planned
+                  </h3>
+                  <p className="text-sm text-balance-text-muted mb-4">
+                    Generate a day plan to get started.
+                  </p>
+                  {!isDayPast(selectedDateObj) && (
+                    <Button
+                      onClick={() => generateDayPlan(selectedDate)}
+                      className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
+                    >
+                      Generate Plan
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            ) : null}
+          </div>
         </div>
       </ScrollArea>
 

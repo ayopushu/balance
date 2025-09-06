@@ -31,12 +31,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 const PILLAR_COLORS = [
-  { name: 'Health Green', value: '#4CAF50', id: 'health' },
-  { name: 'Relationship Pink', value: '#E91E63', id: 'relationships' },
-  { name: 'Work Yellow', value: '#FFC107', id: 'work' },
+  { name: 'Green', value: '#4CAF50', id: 'green' },
+  { name: 'Pink', value: '#E91E63', id: 'pink' },
+  { name: 'Yellow', value: '#FFC107', id: 'yellow' },
   { name: 'Blue', value: '#2196F3', id: 'blue' },
   { name: 'Purple', value: '#9C27B0', id: 'purple' },
-  { name: 'Orange', value: '#FF5722', id: 'orange' },
+  { name: 'Red', value: '#F44336', id: 'red' },
 ];
 
 export const Settings: React.FC = () => {
