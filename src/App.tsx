@@ -9,10 +9,14 @@ import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
 import { Analytics } from "./pages/Analytics";
 import { BottomNavigation } from "./components/BottomNavigation";
+import { OnboardingDialog } from "./components/OnboardingDialog";
+import { useBalanceStore } from "./store";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  const { settings, completeOnboarding } = useBalanceStore();
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -28,6 +32,12 @@ const App = () => {
               <Route path="/analytics" element={<Analytics />} />
             </Routes>
             <BottomNavigation />
+            
+            {/* Onboarding Dialog */}
+            <OnboardingDialog
+              isOpen={settings.isFirstTime}
+              onComplete={completeOnboarding}
+            />
           </div>
         </BrowserRouter>
       </TooltipProvider>

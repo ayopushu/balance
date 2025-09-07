@@ -32,7 +32,7 @@ import { useNavigate } from 'react-router-dom';
 
 const PILLAR_COLORS = [
   { name: 'Green', value: '#4CAF50', id: 'green' },
-  { name: 'Pink', value: '#E91E63', id: 'pink' },
+  { name: 'Pink', value: '#FF69B4', id: 'pink' },
   { name: 'Yellow', value: '#FFC107', id: 'yellow' },
   { name: 'Blue', value: '#2196F3', id: 'blue' },
   { name: 'Purple', value: '#9C27B0', id: 'purple' },
@@ -49,6 +49,8 @@ export const Settings: React.FC = () => {
     resetData,
     exportData,
     importData,
+    settings,
+    updateSettings,
   } = useBalanceStore();
   
   const { toast } = useToast();
@@ -61,6 +63,8 @@ export const Settings: React.FC = () => {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [resetStep, setResetStep] = useState(0);
   const [resetConfirmText, setResetConfirmText] = useState('');
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState(settings.userName);
 
   // Handle pillar name update
   const handlePillarUpdate = (pillarId: string, newName: string) => {
@@ -193,6 +197,16 @@ export const Settings: React.FC = () => {
 
   const canProceedReset = resetStep < 2 || resetConfirmText === 'RESET';
 
+  // Handle name update
+  const handleNameUpdate = () => {
+    updateSettings({ userName: newName });
+    setEditingName(false);
+    toast({
+      title: "Name updated",
+      description: "Your name has been saved successfully."
+    });
+  };
+
   return (
     <div className="min-h-screen bg-balance-background">
       {/* Header */}
@@ -214,6 +228,61 @@ export const Settings: React.FC = () => {
 
       <ScrollArea className="flex-1">
         <div className="container mx-auto px-4 py-6 space-y-6">
+          {/* User Name Management */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card className="surface p-6">
+              <h3 className="heading-sm text-balance-text-primary mb-4">
+                User Profile
+              </h3>
+              
+              {editingName ? (
+                <div className="flex items-center space-x-3">
+                  <Input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="Enter your name"
+                    className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm flex-1"
+                    autoFocus
+                  />
+                  <Button
+                    onClick={handleNameUpdate}
+                    size="sm"
+                    className="bg-health hover:bg-health/90 text-white rounded-balance"
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setEditingName(false);
+                      setNewName(settings.userName);
+                    }}
+                    className="rounded-balance"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
+                  <span className="body-md text-balance-text-primary">{settings.userName}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEditingName(true)}
+                    className="text-balance-text-muted hover:text-balance-text-primary"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </Card>
+          </motion.div>
+
           {/* Life Pillars Management */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

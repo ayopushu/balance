@@ -37,7 +37,7 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-balance-surface border-balance-surface-elevated">
+      <DialogContent className="sm:max-w-md bg-balance-surface/95 backdrop-blur-sm border-balance-surface-elevated">
         <DialogHeader>
           <DialogTitle className="text-lg font-medium text-balance-text-primary text-center">
             How did it go?
@@ -57,37 +57,33 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-3">
             <Button
               onClick={() => onRate('win')}
-              className="h-16 text-lg font-semibold rounded-lg bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30"
+              className="w-full h-16 text-lg font-semibold rounded-lg bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30"
             >
-              W<br />
-              <span className="text-sm font-normal">Win</span>
+              W - Win
             </Button>
 
             <Button
               onClick={() => onRate('good')}
-              className="h-16 text-lg font-semibold rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
+              className="w-full h-16 text-lg font-semibold rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30"
             >
-              Good<br />
-              <span className="text-sm font-normal">Good</span>
+              Good
             </Button>
 
             <Button
               onClick={() => onRate('bad')}
-              className="h-16 text-lg font-semibold rounded-lg bg-yellow-600/20 text-yellow-600 hover:bg-yellow-600/30 border border-yellow-600/30"
+              className="w-full h-16 text-lg font-semibold rounded-lg bg-yellow-600/20 text-yellow-600 hover:bg-yellow-600/30 border border-yellow-600/30"
             >
-              Bad<br />
-              <span className="text-sm font-normal">Bad</span>
+              Bad
             </Button>
 
             <Button
               onClick={() => onRate('skip')}
-              className="h-16 text-lg font-semibold rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30"
+              className="w-full h-16 text-lg font-semibold rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30"
             >
-              L<br />
-              <span className="text-sm font-normal">Skip</span>
+              L - Skip
             </Button>
           </div>
 

@@ -37,6 +37,7 @@ const DEFAULT_SETTINGS: Settings = {
   chartType: 'donut',
   notificationsEnabled: true,
   hapticFeedback: true,
+  isFirstTime: true,
 };
 
 export const useBalanceStore = create<AppState>()(
@@ -237,6 +238,26 @@ export const useBalanceStore = create<AppState>()(
       updateSettings: (updates) => set((state) => ({
         settings: { ...state.settings, ...updates },
       })),
+
+      // Complete onboarding
+      completeOnboarding: (userName, newPillars) => set((state) => {
+        const pillarsWithIds = newPillars.map(pillar => ({
+          ...pillar,
+          id: crypto.randomUUID(),
+        }));
+        
+        return {
+          ...state,
+          settings: {
+            ...state.settings,
+            userName,
+            isFirstTime: false,
+          },
+          pillars: pillarsWithIds,
+          categories: [], // Clear default categories
+          expandedPillars: pillarsWithIds.map(p => p.id),
+        };
+      }),
 
       // UI state actions
       setSelectedDate: (date) => set(() => ({ selectedDate: date })),

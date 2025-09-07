@@ -3,40 +3,17 @@
  * Shows themed design with username management and analytics access
  */
 
-import React, { useState } from 'react';
-import { User, BarChart3, Edit2 } from 'lucide-react';
+import React from 'react';
+import { User, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
-import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    settings,
-    updateSettings,
-    pillars
-  } = useBalanceStore();
-  const {
-    toast
-  } = useToast();
-  const [editingName, setEditingName] = useState(false);
-  const [newName, setNewName] = useState(settings.userName);
-
-  // Handle name update
-  const handleNameUpdate = () => {
-    updateSettings({
-      userName: newName
-    });
-    setEditingName(false);
-    toast({
-      title: "Name updated",
-      description: "Your name has been saved successfully."
-    });
-  };
+  const { settings } = useBalanceStore();
   return <div className="min-h-screen bg-balance-background">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-balance-background/95 backdrop-blur-sm border-b border-balance-surface-elevated">
@@ -71,27 +48,9 @@ export const Profile: React.FC = () => {
                 
                 {/* Name Section */}
                 <div className="text-center">
-                  {editingName ? <div className="flex flex-col items-center space-y-3 w-full max-w-xs mx-auto">
-                      <Input value={newName} onChange={e => setNewName(e.target.value)} autoFocus placeholder="Enter your name" className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance text-center w-full bg-slate-500" />
-                      <div className="flex space-x-2">
-                        <Button onClick={handleNameUpdate} size="sm" className="bg-health hover:bg-health/90 text-white rounded-balance">
-                          Save
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => {
-                      setEditingName(false);
-                      setNewName(settings.userName);
-                    }} className="rounded-balance">
-                          Cancel
-                        </Button>
-                      </div>
-                    </div> : <div>
-                      <h2 className="text-xl font-semibold text-balance-text-primary mb-3 truncate max-w-xs mx-auto">
-                        {settings.userName}
-                      </h2>
-                      <Button variant="ghost" size="sm" onClick={() => setEditingName(true)} className="text-sm text-balance-text-muted hover:text-balance-text-primary bg-balance-surface-elevated/50 hover:bg-balance-surface-elevated rounded-lg px-4 py-2 font-medium transition-all">
-                        Edit Name
-                      </Button>
-                    </div>}
+                  <h2 className="text-xl font-semibold text-balance-text-primary mb-3 truncate max-w-xs mx-auto">
+                    {settings.userName}
+                  </h2>
                 </div>
 
                 {/* Decorative dots only */}

@@ -66,6 +66,7 @@ export interface Settings {
   chartType: 'donut' | 'radar' | 'bar' | 'line';
   notificationsEnabled: boolean;
   hapticFeedback: boolean;
+  isFirstTime: boolean;
 }
 
 export interface AppState {
@@ -104,6 +105,7 @@ export interface AppState {
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
   
   updateSettings: (updates: Partial<Settings>) => void;
+  completeOnboarding: (userName: string, newPillars: Omit<Pillar, 'id'>[]) => void;
   
   setSelectedDate: (date: string) => void;
   togglePillarExpanded: (pillarId: string) => void;

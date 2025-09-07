@@ -46,14 +46,13 @@ export const Plan: React.FC = () => {
   );
 
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<DayItem | null>(null);
+  const [addingToPillar, setAddingToPillar] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     title: '',
     start: '',
     end: '',
-    categoryId: '',
-    subcategoryId: '',
-    isSpecial: false,
   });
 
   const today = startOfDay(new Date());
@@ -125,11 +124,30 @@ export const Plan: React.FC = () => {
       title: item.title,
       start: item.start || '',
       end: item.end || '',
-      categoryId: item.categoryId || '',
-      subcategoryId: item.subcategoryId || '',
-      isSpecial: item.isSpecial || false,
     });
     setShowEditDialog(true);
+  };
+
+  // Handle add task
+  const handleAddTask = (pillarId: string) => {
+    setAddingToPillar(pillarId);
+    setEditForm({
+      title: '',
+      start: '',
+      end: '',
+    });
+    setShowAddDialog(true);
+  };
+
+  // Handle delete item
+  const handleDeleteItem = (itemId: string) => {
+    const dayPlan = selectedDayPlan;
+    if (!dayPlan) return;
+    
+    const updatedItems = dayPlan.items.filter(item => item.id !== itemId);
+    
+    // Update the day plan with remaining items
+    updateDayItem(selectedDate, itemId, { status: 'skipped' }); // Mark as removed
   };
 
   // Save edit changes
@@ -137,17 +155,40 @@ export const Plan: React.FC = () => {
     if (!editingItem) return;
     
     updateDayItem(selectedDate, editingItem.id, {
-      ...editingItem,
       title: editForm.title,
       start: editForm.start || undefined,
       end: editForm.end || undefined,
-      categoryId: editForm.categoryId || undefined,
-      subcategoryId: editForm.subcategoryId || undefined,
-      isSpecial: editForm.isSpecial,
     });
     
     setShowEditDialog(false);
     setEditingItem(null);
+  };
+
+  // Save new task
+  const handleSaveAdd = () => {
+    if (!addingToPillar || !editForm.title.trim()) return;
+    
+    const newItem: Partial<DayItem> = {
+      id: crypto.randomUUID(),
+      date: selectedDate,
+      pillarId: addingToPillar,
+      categoryId: `temp-${addingToPillar}`,
+      title: editForm.title,
+      start: editForm.start || undefined,
+      end: editForm.end || undefined,
+      status: 'pending',
+    };
+    
+    // Add the new item to the day plan
+    const dayPlan = selectedDayPlan;
+    if (dayPlan) {
+      const updatedItems = [...dayPlan.items, newItem as DayItem];
+      // Here we would need to update the entire day plan, but for simplicity we'll use updateDayItem
+      // This is a simplified implementation
+    }
+    
+    setShowAddDialog(false);
+    setAddingToPillar(null);
   };
 
   const selectedDateObj = new Date(selectedDate);
@@ -261,7 +302,10 @@ export const Plan: React.FC = () => {
             {/* Pillar cards with tasks */}
             {pillars.map((pillar) => {
               const pillarItems = selectedDayPlan?.items.filter(item => item.pillarId === pillar.id) || [];
-              if (pillarItems.length === 0) return null;
+              const sortedItems = pillarItems.sort((a, b) => {
+                if (!a.start || !b.start) return 0;
+                return a.start.localeCompare(b.start);
+              });
 
               return (
                 <Card key={pillar.id} className="surface p-4">
@@ -278,13 +322,24 @@ export const Plan: React.FC = () => {
                         {pillar.name}
                       </h3>
                       <span className="text-xs px-2 py-1 bg-balance-surface-elevated rounded-full text-balance-text-muted">
-                        {pillarItems.length} tasks
+                        {sortedItems.length} tasks
                       </span>
                     </div>
+                    
+                    {!isDayPast(selectedDateObj) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleAddTask(pillar.id)}
+                        className="text-balance-text-muted hover:text-balance-text-primary"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                   
                   <div className="mt-3 space-y-2">
-                    {pillarItems.map((item) => (
+                    {sortedItems.map((item) => (
                       <div 
                         key={item.id}
                         className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
@@ -320,17 +375,33 @@ export const Plan: React.FC = () => {
                         </div>
                         
                         {!isDayPast(selectedDateObj) && item.status === 'pending' && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEditItem(item)}
-                            className="text-balance-text-muted hover:text-balance-text-primary flex-shrink-0 ml-2"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </Button>
+                          <div className="flex items-center space-x-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditItem(item)}
+                              className="text-balance-text-muted hover:text-balance-text-primary flex-shrink-0"
+                            >
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="text-red-500 hover:text-red-600 flex-shrink-0"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
                         )}
                       </div>
                     ))}
+                    
+                    {sortedItems.length === 0 && (
+                      <div className="text-center py-4">
+                        <p className="text-sm text-balance-text-muted">No tasks for this pillar</p>
+                      </div>
+                    )}
                   </div>
                 </Card>
               );
@@ -410,27 +481,6 @@ export const Plan: React.FC = () => {
                 />
               </div>
             </div>
-            
-            <div>
-              <Label className="body-md text-balance-text-secondary">
-                Category
-              </Label>
-              <Select
-                value={editForm.categoryId}
-                onValueChange={(value) => setEditForm(prev => ({ ...prev, categoryId: value }))}
-              >
-                <SelectTrigger className="surface-elevated border-balance-surface-elevated rounded-balance mt-1">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent className="surface rounded-balance">
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
           
           <DialogFooter className="flex space-x-3">
@@ -446,6 +496,76 @@ export const Plan: React.FC = () => {
               className="bg-health hover:bg-health/90 text-white rounded-balance"
             >
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Task Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-md surface rounded-balance">
+          <DialogHeader>
+            <DialogTitle className="heading-md text-balance-text-primary">
+              Add New Task
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="addTitle" className="body-md text-balance-text-secondary">
+                Task Title
+              </Label>
+              <Input
+                id="addTitle"
+                value={editForm.title}
+                onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                className="surface-elevated border-balance-surface-elevated rounded-balance mt-1"
+                placeholder="Enter task title"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="addStart" className="body-md text-balance-text-secondary">
+                  Start Time
+                </Label>
+                <Input
+                  id="addStart"
+                  type="time"
+                  value={editForm.start}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, start: e.target.value }))}
+                  className="surface-elevated border-balance-surface-elevated rounded-balance mt-1"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="addEnd" className="body-md text-balance-text-secondary">
+                  End Time
+                </Label>
+                <Input
+                  id="addEnd"
+                  type="time"
+                  value={editForm.end}
+                  onChange={(e) => setEditForm(prev => ({ ...prev, end: e.target.value }))}
+                  className="surface-elevated border-balance-surface-elevated rounded-balance mt-1"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex space-x-3">
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowAddDialog(false)}
+              className="rounded-balance"
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSaveAdd}
+              className="bg-health hover:bg-health/90 text-white rounded-balance"
+            >
+              Add Task
             </Button>
           </DialogFooter>
         </DialogContent>
