@@ -10,35 +10,37 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-
-const PILLAR_COLORS = [
-  { name: 'Green', value: '#4CAF50', id: 'green' },
-  { name: 'Pink', value: '#FF69B4', id: 'pink' },
-  { name: 'Yellow', value: '#FFC107', id: 'yellow' },
-  { name: 'Blue', value: '#2196F3', id: 'blue' },
-  { name: 'Purple', value: '#9C27B0', id: 'purple' },
-  { name: 'Red', value: '#F44336', id: 'red' },
-];
-
+const PILLAR_COLORS = [{
+  name: 'Green',
+  value: '#4CAF50',
+  id: 'green'
+}, {
+  name: 'Pink',
+  value: '#FF69B4',
+  id: 'pink'
+}, {
+  name: 'Yellow',
+  value: '#FFC107',
+  id: 'yellow'
+}, {
+  name: 'Blue',
+  value: '#2196F3',
+  id: 'blue'
+}, {
+  name: 'Purple',
+  value: '#9C27B0',
+  id: 'purple'
+}, {
+  name: 'Red',
+  value: '#F44336',
+  id: 'red'
+}];
 export const Settings: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -50,11 +52,11 @@ export const Settings: React.FC = () => {
     exportData,
     importData,
     settings,
-    updateSettings,
+    updateSettings
   } = useBalanceStore();
-  
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const [editingPillar, setEditingPillar] = useState<string | null>(null);
   const [newPillarName, setNewPillarName] = useState('');
   const [newPillarColor, setNewPillarColor] = useState(PILLAR_COLORS[0].value);
@@ -68,40 +70,41 @@ export const Settings: React.FC = () => {
 
   // Handle pillar name update
   const handlePillarUpdate = (pillarId: string, newName: string) => {
-    updatePillar(pillarId, { name: newName });
+    updatePillar(pillarId, {
+      name: newName
+    });
     setEditingPillar(null);
     toast({
       title: "Pillar updated",
-      description: "Pillar name has been saved successfully.",
+      description: "Pillar name has been saved successfully."
     });
   };
 
   // Handle pillar color update
   const handleColorUpdate = (pillarId: string, color: string) => {
-    updatePillar(pillarId, { color });
+    updatePillar(pillarId, {
+      color
+    });
     toast({
       title: "Color updated",
-      description: "Pillar color has been updated.",
+      description: "Pillar color has been updated."
     });
   };
 
   // Handle add new pillar
   const handleAddPillar = () => {
     if (!newPillarName.trim()) return;
-    
     addPillar({
       name: newPillarName,
       color: newPillarColor,
-      order: pillars.length,
+      order: pillars.length
     });
-    
     setNewPillarName('');
     setNewPillarColor(PILLAR_COLORS[0].value);
     setShowAddDialog(false);
-    
     toast({
       title: "Pillar added",
-      description: "New pillar has been created successfully.",
+      description: "New pillar has been created successfully."
     });
   };
 
@@ -112,7 +115,7 @@ export const Settings: React.FC = () => {
     toast({
       title: "Pillar deleted",
       description: "Pillar has been removed successfully.",
-      variant: "destructive",
+      variant: "destructive"
     });
   };
 
@@ -120,7 +123,9 @@ export const Settings: React.FC = () => {
   const handleExport = () => {
     try {
       const data = exportData();
-      const blob = new Blob([data], { type: 'application/json' });
+      const blob = new Blob([data], {
+        type: 'application/json'
+      });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -129,16 +134,15 @@ export const Settings: React.FC = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
       toast({
         title: "Data exported",
-        description: "Your Balance data has been downloaded successfully.",
+        description: "Your Balance data has been downloaded successfully."
       });
     } catch (error) {
       toast({
         title: "Export failed",
         description: "There was an error exporting your data.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -147,17 +151,15 @@ export const Settings: React.FC = () => {
   const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       try {
         const data = e.target?.result as string;
         const success = importData(data);
-        
         if (success) {
           toast({
             title: "Data imported",
-            description: "Your Balance data has been restored successfully.",
+            description: "Your Balance data has been restored successfully."
           });
         } else {
           throw new Error('Invalid data format');
@@ -166,12 +168,12 @@ export const Settings: React.FC = () => {
         toast({
           title: "Import failed",
           description: "The file format is invalid or corrupted.",
-          variant: "destructive",
+          variant: "destructive"
         });
       }
     };
     reader.readAsText(file);
-    
+
     // Reset file input
     event.target.value = '';
   };
@@ -190,35 +192,29 @@ export const Settings: React.FC = () => {
       toast({
         title: "Data reset",
         description: "All your data has been reset to defaults.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const canProceedReset = resetStep < 2 || resetConfirmText === 'RESET';
 
   // Handle name update
   const handleNameUpdate = () => {
-    updateSettings({ userName: newName });
+    updateSettings({
+      userName: newName
+    });
     setEditingName(false);
     toast({
       title: "Name updated",
       description: "Your name has been saved successfully."
     });
   };
-
-  return (
-    <div className="min-h-screen bg-balance-background">
+  return <div className="min-h-screen bg-balance-background">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-balance-background/95 backdrop-blur-sm border-b border-balance-surface-elevated">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate('/')}
-              className="text-balance-text-muted hover:text-balance-text-primary"
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="text-balance-text-muted hover:text-balance-text-primary">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <h1 className="heading-lg text-balance-text-primary">Settings</h1>
@@ -229,157 +225,116 @@ export const Settings: React.FC = () => {
       <ScrollArea className="flex-1">
         <div className="container mx-auto px-4 py-6 space-y-6">
           {/* User Name Management */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.3
+        }}>
             <Card className="surface p-6">
               <h3 className="heading-sm text-balance-text-primary mb-4">
                 User Profile
               </h3>
               
-              {editingName ? (
-                <div className="flex items-center space-x-3">
-                  <Input
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Enter your name"
-                    className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm flex-1"
-                    autoFocus
-                  />
-                  <Button
-                    onClick={handleNameUpdate}
-                    size="sm"
-                    className="bg-health hover:bg-health/90 text-white rounded-balance"
-                  >
+              {editingName ? <div className="flex items-center space-x-3">
+                  <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Enter your name" autoFocus className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm flex-1 bg-slate-500" />
+                  <Button onClick={handleNameUpdate} size="sm" className="bg-health hover:bg-health/90 text-white rounded-balance">
                     Save
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setEditingName(false);
-                      setNewName(settings.userName);
-                    }}
-                    className="rounded-balance"
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => {
+                setEditingName(false);
+                setNewName(settings.userName);
+              }} className="rounded-balance">
                     Cancel
                   </Button>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
+                </div> : <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
                   <span className="body-md text-balance-text-primary">{settings.userName}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setEditingName(true)}
-                    className="text-balance-text-muted hover:text-balance-text-primary"
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => setEditingName(true)} className="text-balance-text-muted hover:text-balance-text-primary">
                     <Edit2 className="w-4 h-4" />
                   </Button>
-                </div>
-              )}
+                </div>}
             </Card>
           </motion.div>
 
           {/* Life Pillars Management */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.3
+        }}>
             <Card className="surface p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="heading-sm text-balance-text-primary">
                   Life Pillars
                 </h3>
-                <Button
-                  onClick={() => setShowAddDialog(true)}
-                  size="sm"
-                  className="bg-health hover:bg-health/90 text-white rounded-balance"
-                >
+                <Button onClick={() => setShowAddDialog(true)} size="sm" className="bg-health hover:bg-health/90 text-white rounded-balance">
                   <Plus className="w-4 h-4 mr-2" />
                   Add Pillar
                 </Button>
               </div>
               
               <div className="space-y-4">
-                {pillars.map((pillar) => (
-                  <div key={pillar.id} className="flex items-center space-x-4 p-3 surface-elevated rounded-balance">
-                    <div 
-                      className="w-6 h-6 rounded-full"
-                      style={{ backgroundColor: pillar.color }}
-                    />
+                {pillars.map(pillar => <div key={pillar.id} className="flex items-center space-x-4 p-3 surface-elevated rounded-balance">
+                    <div className="w-6 h-6 rounded-full" style={{
+                  backgroundColor: pillar.color
+                }} />
                     
-                    {editingPillar === pillar.id ? (
-                      <div className="flex-1 flex items-center space-x-2">
-                        <Input
-                          defaultValue={pillar.name}
-                          onBlur={(e) => handlePillarUpdate(pillar.id, e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              handlePillarUpdate(pillar.id, e.currentTarget.value);
-                            }
-                          }}
-                          className="bg-balance-surface border-balance-surface-elevated rounded-balance-sm"
-                          autoFocus
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex-1">
+                    {editingPillar === pillar.id ? <div className="flex-1 flex items-center space-x-2">
+                        <Input defaultValue={pillar.name} onBlur={e => handlePillarUpdate(pillar.id, e.target.value)} onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      handlePillarUpdate(pillar.id, e.currentTarget.value);
+                    }
+                  }} className="bg-balance-surface border-balance-surface-elevated rounded-balance-sm" autoFocus />
+                      </div> : <div className="flex-1">
                         <span className="body-md text-balance-text-primary">{pillar.name}</span>
-                      </div>
-                    )}
+                      </div>}
                     
-                    <Select value={pillar.color} onValueChange={(color) => handleColorUpdate(pillar.id, color)}>
+                    <Select value={pillar.color} onValueChange={color => handleColorUpdate(pillar.id, color)}>
                       <SelectTrigger className="w-[40px] bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm p-2">
                         <Palette className="w-4 h-4" />
                       </SelectTrigger>
                       <SelectContent>
-                        {PILLAR_COLORS.map((color) => (
-                          <SelectItem key={color.id} value={color.value}>
+                        {PILLAR_COLORS.map(color => <SelectItem key={color.id} value={color.value}>
                             <div className="flex items-center space-x-2">
-                              <div 
-                                className="w-4 h-4 rounded-full"
-                                style={{ backgroundColor: color.value }}
-                              />
+                              <div className="w-4 h-4 rounded-full" style={{
+                          backgroundColor: color.value
+                        }} />
                               <span>{color.name}</span>
                             </div>
-                          </SelectItem>
-                        ))}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                     
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditingPillar(pillar.id)}
-                      className="text-balance-text-muted hover:text-balance-text-primary"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => setEditingPillar(pillar.id)} className="text-balance-text-muted hover:text-balance-text-primary">
                       <Edit2 className="w-4 h-4" />
                     </Button>
                     
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowDeleteDialog(pillar.id)}
-                      className="text-red-500 hover:text-red-600"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => setShowDeleteDialog(pillar.id)} className="text-red-500 hover:text-red-600">
                       <Trash2 className="w-4 h-4" />
                     </Button>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </Card>
           </motion.div>
 
           {/* Data Management */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.3 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.1,
+          duration: 0.3
+        }}>
             <Card className="surface p-6">
               <h3 className="heading-sm text-balance-text-primary mb-4">
                 Data Management
@@ -387,40 +342,22 @@ export const Settings: React.FC = () => {
               
               <div className="space-y-4">
                 {/* Export data */}
-                <Button
-                  variant="outline"
-                  onClick={handleExport}
-                  className="w-full justify-start text-balance-text-primary border-balance-surface-elevated rounded-balance hover:bg-balance-surface-elevated"
-                >
+                <Button variant="outline" onClick={handleExport} className="w-full justify-start text-balance-text-primary border-balance-surface-elevated rounded-balance hover:bg-balance-surface-elevated">
                   <Download className="w-5 h-5 mr-3" />
                   Export JSON Backup
                 </Button>
 
                 {/* Import data */}
                 <div>
-                  <input
-                    type="file"
-                    accept=".json"
-                    onChange={handleImport}
-                    className="hidden"
-                    id="import-file"
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={() => document.getElementById('import-file')?.click()}
-                    className="w-full justify-start text-balance-text-primary border-balance-surface-elevated rounded-balance hover:bg-balance-surface-elevated"
-                  >
+                  <input type="file" accept=".json" onChange={handleImport} className="hidden" id="import-file" />
+                  <Button variant="outline" onClick={() => document.getElementById('import-file')?.click()} className="w-full justify-start text-balance-text-primary border-balance-surface-elevated rounded-balance hover:bg-balance-surface-elevated">
                     <Upload className="w-5 h-5 mr-3" />
                     Import JSON Backup
                   </Button>
                 </div>
 
                 {/* Reset data */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowResetDialog(true)}
-                  className="w-full justify-start text-red-500 border-red-500/20 rounded-balance hover:bg-red-500/10"
-                >
+                <Button variant="outline" onClick={() => setShowResetDialog(true)} className="w-full justify-start text-red-500 border-red-500/20 rounded-balance hover:bg-red-500/10">
                   <AlertTriangle className="w-5 h-5 mr-3" />
                   Reset All Data
                 </Button>
@@ -443,12 +380,7 @@ export const Settings: React.FC = () => {
           <div className="space-y-4 py-4">
             <div>
               <Label className="body-md text-balance-text-primary">Pillar Name</Label>
-              <Input
-                value={newPillarName}
-                onChange={(e) => setNewPillarName(e.target.value)}
-                placeholder="Enter pillar name"
-                className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2"
-              />
+              <Input value={newPillarName} onChange={e => setNewPillarName(e.target.value)} placeholder="Enter pillar name" className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2" />
             </div>
             
             <div>
@@ -458,17 +390,14 @@ export const Settings: React.FC = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {PILLAR_COLORS.map((color) => (
-                    <SelectItem key={color.id} value={color.value}>
+                  {PILLAR_COLORS.map(color => <SelectItem key={color.id} value={color.value}>
                       <div className="flex items-center space-x-2">
-                        <div 
-                          className="w-4 h-4 rounded-full"
-                          style={{ backgroundColor: color.value }}
-                        />
+                        <div className="w-4 h-4 rounded-full" style={{
+                      backgroundColor: color.value
+                    }} />
                         <span>{color.name}</span>
                       </div>
-                    </SelectItem>
-                  ))}
+                    </SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -478,11 +407,7 @@ export const Settings: React.FC = () => {
             <Button variant="ghost" onClick={() => setShowAddDialog(false)}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleAddPillar}
-              disabled={!newPillarName.trim()}
-              className="bg-health hover:bg-health/90 text-white"
-            >
+            <Button onClick={handleAddPillar} disabled={!newPillarName.trim()} className="bg-health hover:bg-health/90 text-white">
               Add Pillar
             </Button>
           </DialogFooter>
@@ -506,10 +431,7 @@ export const Settings: React.FC = () => {
             <Button variant="ghost" onClick={() => setShowDeleteDialog(null)}>
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={() => showDeleteDialog && handleDeletePillar(showDeleteDialog)}
-            >
+            <Button variant="destructive" onClick={() => showDeleteDialog && handleDeletePillar(showDeleteDialog)}>
               Delete Pillar
             </Button>
           </DialogFooter>
@@ -533,33 +455,19 @@ export const Settings: React.FC = () => {
             </DialogDescription>
           </DialogHeader>
 
-          {resetStep === 2 && (
-            <div className="py-4">
-              <Input
-                value={resetConfirmText}
-                onChange={(e) => setResetConfirmText(e.target.value)}
-                placeholder="Type RESET to confirm"
-                className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm"
-              />
-            </div>
-          )}
+          {resetStep === 2 && <div className="py-4">
+              <Input value={resetConfirmText} onChange={e => setResetConfirmText(e.target.value)} placeholder="Type RESET to confirm" className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm" />
+            </div>}
 
           <DialogFooter>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setShowResetDialog(false);
-                setResetStep(0);
-                setResetConfirmText('');
-              }}
-            >
+            <Button variant="ghost" onClick={() => {
+            setShowResetDialog(false);
+            setResetStep(0);
+            setResetConfirmText('');
+          }}>
               Cancel
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleResetStep}
-              disabled={!canProceedReset}
-            >
+            <Button variant="destructive" onClick={handleResetStep} disabled={!canProceedReset}>
               {resetStep === 0 && "Continue"}
               {resetStep === 1 && "I understand"}
               {resetStep === 2 && "Reset Everything"}
@@ -567,6 +475,5 @@ export const Settings: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
