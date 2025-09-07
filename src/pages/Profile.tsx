@@ -13,27 +13,31 @@ import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-
 export const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const { settings, updateSettings, pillars } = useBalanceStore();
-  const { toast } = useToast();
-
+  const {
+    settings,
+    updateSettings,
+    pillars
+  } = useBalanceStore();
+  const {
+    toast
+  } = useToast();
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(settings.userName);
 
   // Handle name update
   const handleNameUpdate = () => {
-    updateSettings({ userName: newName });
+    updateSettings({
+      userName: newName
+    });
     setEditingName(false);
     toast({
       title: "Name updated",
-      description: "Your name has been saved successfully.",
+      description: "Your name has been saved successfully."
     });
   };
-
-  return (
-    <div className="min-h-screen bg-balance-background">
+  return <div className="min-h-screen bg-balance-background">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-balance-background/95 backdrop-blur-sm border-b border-balance-surface-elevated">
         <div className="container mx-auto px-4 py-4">
@@ -44,11 +48,15 @@ export const Profile: React.FC = () => {
       <ScrollArea className="flex-1">
         <div className="container mx-auto px-4 py-6 space-y-6">
           {/* User Info Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          duration: 0.3
+        }}>
             <Card className="surface p-8">
               <div className="flex flex-col items-center space-y-6">
                 {/* Themed Avatar */}
@@ -63,70 +71,55 @@ export const Profile: React.FC = () => {
                 
                 {/* Name Section */}
                 <div className="text-center">
-                  {editingName ? (
-                    <div className="flex flex-col items-center space-y-3 w-full max-w-xs mx-auto">
-                      <Input
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                        className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance text-center w-full"
-                        autoFocus
-                        placeholder="Enter your name"
-                      />
+                  {editingName ? <div className="flex flex-col items-center space-y-3 w-full max-w-xs mx-auto">
+                      <Input value={newName} onChange={e => setNewName(e.target.value)} autoFocus placeholder="Enter your name" className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance text-center w-full bg-slate-500" />
                       <div className="flex space-x-2">
                         <Button onClick={handleNameUpdate} size="sm" className="bg-health hover:bg-health/90 text-white rounded-balance">
                           Save
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => {
-                            setEditingName(false);
-                            setNewName(settings.userName);
-                          }}
-                          className="rounded-balance"
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => {
+                      setEditingName(false);
+                      setNewName(settings.userName);
+                    }} className="rounded-balance">
                           Cancel
                         </Button>
                       </div>
-                    </div>
-                  ) : (
-                    <div>
+                    </div> : <div>
                       <h2 className="text-xl font-semibold text-balance-text-primary mb-3 truncate max-w-xs mx-auto">
                         {settings.userName}
                       </h2>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingName(true)}
-                        className="text-sm text-balance-text-muted hover:text-balance-text-primary bg-balance-surface-elevated/50 hover:bg-balance-surface-elevated rounded-lg px-4 py-2 font-medium transition-all"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => setEditingName(true)} className="text-sm text-balance-text-muted hover:text-balance-text-primary bg-balance-surface-elevated/50 hover:bg-balance-surface-elevated rounded-lg px-4 py-2 font-medium transition-all">
                         Edit Name
                       </Button>
-                    </div>
-                  )}
+                    </div>}
                 </div>
 
                 {/* Decorative dots only */}
                 <div className="flex items-center justify-center space-x-3">
                   <div className="w-3 h-3 bg-health rounded-full animate-pulse" />
-                  <div className="w-3 h-3 bg-relationships rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-                  <div className="w-3 h-3 bg-work rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+                  <div className="w-3 h-3 bg-relationships rounded-full animate-pulse" style={{
+                  animationDelay: '0.5s'
+                }} />
+                  <div className="w-3 h-3 bg-work rounded-full animate-pulse" style={{
+                  animationDelay: '1s'
+                }} />
                 </div>
               </div>
             </Card>
           </motion.div>
 
           {/* Analytics CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.3 }}
-            className="space-y-4"
-          >
-            <Button 
-              onClick={() => navigate('/analytics')}
-              className="w-full bg-gradient-to-r from-health via-relationships to-work text-white rounded-balance h-20 text-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.2,
+          duration: 0.3
+        }} className="space-y-4">
+            <Button onClick={() => navigate('/analytics')} className="w-full bg-gradient-to-r from-health via-relationships to-work text-white rounded-balance h-20 text-lg font-semibold hover:opacity-90 transition-all duration-300 transform hover:scale-105 shadow-lg">
               <BarChart3 className="w-8 h-8 mr-3" />
               <div className="flex flex-col">
                 <span>Check My Balance</span>
@@ -148,6 +141,5 @@ export const Profile: React.FC = () => {
 
         </div>
       </ScrollArea>
-    </div>
-  );
+    </div>;
 };
