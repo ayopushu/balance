@@ -380,7 +380,7 @@ export const Settings: React.FC = () => {
           <div className="space-y-4 py-4">
             <div>
               <Label className="body-md text-balance-text-primary">Pillar Name</Label>
-              <Input value={newPillarName} onChange={e => setNewPillarName(e.target.value)} placeholder="Enter pillar name" className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2" />
+              <Input value={newPillarName} onChange={e => setNewPillarName(e.target.value)} placeholder="Enter pillar name" className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm mt-2 bg-slate-500" />
             </div>
             
             <div>
