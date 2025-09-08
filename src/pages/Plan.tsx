@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { TimePicker } from '@/components/TimePicker';
+import { IOSTimePicker } from '@/components/IOSTimePicker';
 import {
   Dialog,
   DialogContent,
@@ -445,7 +445,7 @@ export const Plan: React.FC = () => {
                 <Label htmlFor="start" className="body-md text-balance-text-secondary">
                   Start Time
                 </Label>
-                <TimePicker
+                <IOSTimePicker
                   value={editForm.start}
                   onChange={(time) => setEditForm(prev => ({ ...prev, start: time }))}
                   placeholder="Start time"
@@ -457,7 +457,7 @@ export const Plan: React.FC = () => {
                 <Label htmlFor="end" className="body-md text-balance-text-secondary">
                   End Time
                 </Label>
-                <TimePicker
+                <IOSTimePicker
                   value={editForm.end}
                   onChange={(time) => setEditForm(prev => ({ ...prev, end: time }))}
                   placeholder="End time"
@@ -516,7 +516,7 @@ export const Plan: React.FC = () => {
                 <Label htmlFor="addStart" className="body-md text-balance-text-secondary">
                   Start Time
                 </Label>
-                <TimePicker
+                <IOSTimePicker
                   value={editForm.start}
                   onChange={(time) => setEditForm(prev => ({ ...prev, start: time }))}
                   placeholder="Start time"
@@ -528,7 +528,7 @@ export const Plan: React.FC = () => {
                 <Label htmlFor="addEnd" className="body-md text-balance-text-secondary">
                   End Time
                 </Label>
-                <TimePicker
+                <IOSTimePicker
                   value={editForm.end}
                   onChange={(time) => setEditForm(prev => ({ ...prev, end: time }))}
                   placeholder="End time"

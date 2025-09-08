@@ -213,9 +213,7 @@ export const Balance: React.FC = () => {
           </div>
 
           {/* Empty states */}
-
-          {pendingItems.length === 0 && dayItems.length > 0 && (
-            // Show when all tasks are completed
+          {pendingItems.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -236,27 +234,6 @@ export const Balance: React.FC = () => {
                 className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
               >
                 View Analytics
-              </Button>
-            </motion.div>
-          )}
-
-          {pendingItems.length === 0 && dayItems.length === 0 && (
-            // Show when no tasks at all
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-center py-12"
-            >
-              <h3 className="text-lg font-medium text-balance-text-secondary mb-2">
-                No tasks planned
-              </h3>
-              <Button
-                onClick={() => navigate('/plan')}
-                className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add Task
               </Button>
             </motion.div>
           )}

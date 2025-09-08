@@ -38,7 +38,7 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-balance-surface/95 backdrop-blur-sm border-balance-surface-elevated">
+      <DialogContent className="sm:max-w-md bg-balance-surface border-balance-surface-elevated shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-lg font-medium text-balance-text-primary text-center">
             How did it go?
