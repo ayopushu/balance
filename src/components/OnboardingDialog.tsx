@@ -182,7 +182,7 @@ export const OnboardingDialog: React.FC<OnboardingDialogProps> = ({
               </div>
 
               {pillars.length < 6 && <div className="flex items-center space-x-2">
-                  <Input value={newPillarName} onChange={e => setNewPillarName(e.target.value)} placeholder="Add new pillar..." className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm flex-1" />
+                  <Input value={newPillarName} onChange={e => setNewPillarName(e.target.value)} placeholder="Add new pillar..." className="bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm flex-1 bg-slate-500" />
                   <Select value={newPillarColor} onValueChange={setNewPillarColor}>
                     <SelectTrigger className="w-[50px] bg-balance-surface-elevated border-balance-surface-elevated rounded-balance-sm p-2">
                       <Palette className="w-4 h-4" />
