@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 
 interface RatingSheetProps {
@@ -42,6 +43,9 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
           <DialogTitle className="text-lg font-medium text-balance-text-primary text-center">
             How did it go?
           </DialogTitle>
+          <DialogDescription className="text-sm text-balance-text-muted text-center">
+            Rate how well you completed this task
+          </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">

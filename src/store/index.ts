@@ -154,6 +154,31 @@ export const useBalanceStore = create<AppState>()(
         };
       }),
 
+      // Add day item actions
+      addDayItem: (date, item) => set((state) => {
+        let dayPlan = state.dayPlans[date];
+        if (!dayPlan) {
+          dayPlan = { date, items: [] };
+        }
+        
+        const newItem: DayItem = {
+          ...item,
+          id: crypto.randomUUID(),
+          date,
+        };
+        
+        return {
+          ...state,
+          dayPlans: {
+            ...state.dayPlans,
+            [date]: {
+              ...dayPlan,
+              items: [...dayPlan.items, newItem],
+            },
+          },
+        };
+      }),
+
       // Day item actions
       updateDayItem: (date, itemId, updates) => set((state) => {
         const dayPlan = state.dayPlans[date];
@@ -168,6 +193,22 @@ export const useBalanceStore = create<AppState>()(
               items: dayPlan.items.map(item => 
                 item.id === itemId ? { ...item, ...updates } : item
               ),
+            },
+          },
+        };
+      }),
+
+      deleteDayItem: (date, itemId) => set((state) => {
+        const dayPlan = state.dayPlans[date];
+        if (!dayPlan) return state;
+
+        return {
+          ...state,
+          dayPlans: {
+            ...state.dayPlans,
+            [date]: {
+              ...dayPlan,
+              items: dayPlan.items.filter(item => item.id !== itemId),
             },
           },
         };
