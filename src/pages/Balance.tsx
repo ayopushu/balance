@@ -176,28 +176,28 @@ export const Balance: React.FC = () => {
                               </Button>
                             </div>
                             
-                            <div className="flex flex-col space-y-2">
+                            <div className="grid grid-cols-2 gap-2">
                               <Button
                                 onClick={() => handleFeedback(task.id, 'win')}
-                                className="w-full bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-lg py-3 text-sm font-medium"
+                                className="bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-lg py-2 text-xs font-medium"
                               >
                                 W (Win)
                               </Button>
                               <Button
                                 onClick={() => handleFeedback(task.id, 'good')}
-                                className="w-full bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg py-3 text-sm font-medium"
+                                className="bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg py-2 text-xs font-medium"
                               >
                                 Good
                               </Button>
                               <Button
                                 onClick={() => handleFeedback(task.id, 'bad')}
-                                className="w-full bg-yellow-600/20 text-yellow-600 hover:bg-yellow-600/30 border border-yellow-600/30 rounded-lg py-3 text-sm font-medium"
+                                className="bg-yellow-600/20 text-yellow-600 hover:bg-yellow-600/30 border border-yellow-600/30 rounded-lg py-2 text-xs font-medium"
                               >
                                 Bad
                               </Button>
                               <Button
                                 onClick={() => handleFeedback(task.id, 'skip')}
-                                className="w-full bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg py-3 text-sm font-medium"
+                                className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg py-2 text-xs font-medium"
                               >
                                 L (Skip)
                               </Button>
@@ -212,8 +212,8 @@ export const Balance: React.FC = () => {
             ))}
           </div>
 
-          {/* Empty states */}
-          {pendingItems.length === 0 && (
+          {/* Empty state */}
+          {tasksByPillar.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -234,6 +234,29 @@ export const Balance: React.FC = () => {
                 className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
               >
                 View Analytics
+              </Button>
+            </motion.div>
+          )}
+
+          {pendingItems.length === 0 && dayItems.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-center py-12"
+            >
+              <h3 className="text-lg font-medium text-balance-text-secondary mb-2">
+                No tasks for {isToday ? 'today' : 'this day'}
+              </h3>
+              <p className="text-sm text-balance-text-muted mb-4">
+                Your day plan will be generated automatically.
+              </p>
+              <Button
+                onClick={() => generateDayPlan(selectedDate)}
+                className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Generate Day Plan
               </Button>
             </motion.div>
           )}

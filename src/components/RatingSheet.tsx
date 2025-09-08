@@ -14,7 +14,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 
 interface RatingSheetProps {
@@ -38,14 +37,11 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-balance-surface border-balance-surface-elevated shadow-2xl">
+      <DialogContent className="sm:max-w-md bg-balance-surface/95 backdrop-blur-sm border-balance-surface-elevated">
         <DialogHeader>
           <DialogTitle className="text-lg font-medium text-balance-text-primary text-center">
             How did it go?
           </DialogTitle>
-          <DialogDescription className="text-sm text-balance-text-muted text-center">
-            Rate how well you completed this task
-          </DialogDescription>
         </DialogHeader>
 
         <div className="py-4">

@@ -99,9 +99,7 @@ export interface AppState {
   deleteSubcategory: (id: string) => void;
   
   generateDayPlan: (date: string) => void;
-  addDayItem: (date: string, item: Omit<DayItem, 'id' | 'date'>) => void;
   updateDayItem: (date: string, itemId: string, updates: Partial<DayItem>) => void;
-  deleteDayItem: (date: string, itemId: string) => void;
   completeDayItem: (date: string, itemId: string, rating: 'win' | 'good' | 'bad' | 'skip', minutes?: number) => void;
   
   addLogEntry: (entry: Omit<LogEntry, 'id' | 'timestamp'>) => void;
