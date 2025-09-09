@@ -173,6 +173,41 @@ export const useBalanceStore = create<AppState>()(
         };
       }),
 
+      // Add day item
+      addDayItem: (date, itemData) => set((state) => {
+        const dayPlan = state.dayPlans[date];
+        const newItem: DayItem = {
+          id: crypto.randomUUID(),
+          date,
+          ...itemData,
+        };
+
+        if (dayPlan) {
+          return {
+            ...state,
+            dayPlans: {
+              ...state.dayPlans,
+              [date]: {
+                ...dayPlan,
+                items: [...dayPlan.items, newItem],
+              },
+            },
+          };
+        } else {
+          // Create new day plan if it doesn't exist
+          return {
+            ...state,
+            dayPlans: {
+              ...state.dayPlans,
+              [date]: {
+                date,
+                items: [newItem],
+              },
+            },
+          };
+        }
+      }),
+
       // Complete day item with rating
       completeDayItem: (date, itemId, rating, minutes) => set((state) => {
         const dayPlan = state.dayPlans[date];

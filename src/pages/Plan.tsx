@@ -36,6 +36,7 @@ export const Plan: React.FC = () => {
     getDayPlan,
     generateDayPlan,
     updateDayItem,
+    addDayItem,
     pillars,
     getCategoriesByPillar,
     categories,
@@ -72,12 +73,11 @@ export const Plan: React.FC = () => {
   // Handle day selection
   const handleDaySelect = (date: Date) => {
     const dateString = format(date, 'yyyy-MM-dd');
-    if (isBefore(date, today)) return; // Don't allow selection of past days
-    
+    // Allow viewing past days but don't generate plans for them
     setSelectedDate(dateString);
     
-    // Generate day plan if it doesn't exist
-    if (!getDayPlan(dateString)) {
+    // Generate day plan if it doesn't exist and it's not a past day
+    if (!getDayPlan(dateString) && !isBefore(date, today)) {
       generateDayPlan(dateString);
     }
   };
@@ -168,24 +168,15 @@ export const Plan: React.FC = () => {
   const handleSaveAdd = () => {
     if (!addingToPillar || !editForm.title.trim()) return;
     
-    const newItem: Partial<DayItem> = {
-      id: crypto.randomUUID(),
-      date: selectedDate,
+    // Create new item and add it to the store
+    addDayItem(selectedDate, {
       pillarId: addingToPillar,
       categoryId: `temp-${addingToPillar}`,
       title: editForm.title,
       start: editForm.start || undefined,
       end: editForm.end || undefined,
       status: 'pending',
-    };
-    
-    // Add the new item to the day plan
-    const dayPlan = selectedDayPlan;
-    if (dayPlan) {
-      const updatedItems = [...dayPlan.items, newItem as DayItem];
-      // Here we would need to update the entire day plan, but for simplicity we'll use updateDayItem
-      // This is a simplified implementation
-    }
+    });
     
     setShowAddDialog(false);
     setAddingToPillar(null);
@@ -242,10 +233,10 @@ export const Plan: React.FC = () => {
               const summary = getDaySummary(date);
 
               return (
-                <motion.button
+                 <motion.button
                   key={format(date, 'yyyy-MM-dd')}
                   onClick={() => handleDaySelect(date)}
-                  disabled={isPast}
+                  disabled={false}
                   className={`relative p-3 rounded-balance transition-balance ${
                     isPast
                       ? 'surface opacity-50 cursor-not-allowed text-balance-text-muted'

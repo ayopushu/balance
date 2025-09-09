@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { useBalanceStore } from '@/store';
 import { motion, AnimatePresence } from 'framer-motion';
+import { RatingSheet } from '@/components/RatingSheet';
 import type { DayItem } from '@/store/types';
 
 export const Balance: React.FC = () => {
@@ -24,7 +25,7 @@ export const Balance: React.FC = () => {
     updateDayItem,
   } = useBalanceStore();
 
-  const [showFeedback, setShowFeedback] = useState<string | null>(null);
+  const [showRatingSheet, setShowRatingSheet] = useState<string | null>(null);
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const displayDate = new Date(selectedDate);
@@ -54,16 +55,23 @@ export const Balance: React.FC = () => {
 
   // Handle task completion
   const handleTaskComplete = (taskId: string) => {
-    setShowFeedback(taskId);
+    setShowRatingSheet(taskId);
   };
 
-  // Handle feedback selection
-  const handleFeedback = (taskId: string, rating: 'win' | 'good' | 'bad' | 'skip') => {
-    updateDayItem(selectedDate, taskId, { 
-      status: rating === 'skip' ? 'skipped' : 'done',
-      rating: rating 
-    });
-    setShowFeedback(null);
+  // Handle rating selection
+  const handleRating = (taskId: string, rating: 'win' | 'good' | 'bad' | 'skip') => {
+    const { completeDayItem } = useBalanceStore.getState();
+    const task = dayItems.find(item => item.id === taskId);
+    
+    let minutes = 0;
+    if (task?.start && task?.end) {
+      const [startHour, startMin] = task.start.split(':').map(Number);
+      const [endHour, endMin] = task.end.split(':').map(Number);
+      minutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
+    }
+    
+    completeDayItem(selectedDate, taskId, rating, minutes);
+    setShowRatingSheet(null);
   };
 
   // Format date display
@@ -153,58 +161,6 @@ export const Balance: React.FC = () => {
                         </Button>
                       </div>
 
-                      {/* Feedback overlay */}
-                      <AnimatePresence>
-                        {showFeedback === task.id && (
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="absolute inset-0 bg-balance-surface border border-balance-surface-elevated rounded-lg p-4 shadow-lg z-10"
-                          >
-                            <div className="flex items-center justify-between mb-3">
-                              <h5 className="text-sm font-medium text-balance-text-primary">
-                                How did it go?
-                              </h5>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setShowFeedback(null)}
-                                className="text-balance-text-muted hover:text-balance-text-primary"
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-2">
-                              <Button
-                                onClick={() => handleFeedback(task.id, 'win')}
-                                className="bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30 rounded-lg py-2 text-xs font-medium"
-                              >
-                                W (Win)
-                              </Button>
-                              <Button
-                                onClick={() => handleFeedback(task.id, 'good')}
-                                className="bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30 rounded-lg py-2 text-xs font-medium"
-                              >
-                                Good
-                              </Button>
-                              <Button
-                                onClick={() => handleFeedback(task.id, 'bad')}
-                                className="bg-yellow-600/20 text-yellow-600 hover:bg-yellow-600/30 border border-yellow-600/30 rounded-lg py-2 text-xs font-medium"
-                              >
-                                Bad
-                              </Button>
-                              <Button
-                                onClick={() => handleFeedback(task.id, 'skip')}
-                                className="bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 rounded-lg py-2 text-xs font-medium"
-                              >
-                                L (Skip)
-                              </Button>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
                     </motion.div>
                   ))}
                 </div>
@@ -262,6 +218,18 @@ export const Balance: React.FC = () => {
           )}
         </div>
       </ScrollArea>
+
+      {/* Rating Sheet */}
+      {showRatingSheet && (
+        <RatingSheet
+          isOpen={!!showRatingSheet}
+          onClose={() => setShowRatingSheet(null)}
+          onRate={(rating) => handleRating(showRatingSheet, rating)}
+          taskTitle={dayItems.find(item => item.id === showRatingSheet)?.title || ''}
+          estimatedMinutes={0}
+          hasTimeSet={false}
+        />
+      )}
     </div>
   );
 };
