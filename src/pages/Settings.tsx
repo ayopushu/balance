@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { ArrowLeft, Plus, Edit2, Trash2, Download, Upload, AlertTriangle, Palette, Bell } from 'lucide-react';
+import { ArrowLeft, Plus, Edit2, Trash2, Download, Upload, AlertTriangle, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,12 +12,10 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { requestNotificationPermission } from '@/hooks/use-notifications';
 const PILLAR_COLORS = [{
   name: 'Green',
   value: '#4CAF50',
@@ -211,54 +209,6 @@ export const Settings: React.FC = () => {
       description: "Your name has been saved successfully."
     });
   };
-
-  // Handle notification toggle
-  const handleNotificationToggle = async (enabled: boolean) => {
-    if (enabled) {
-      // Check current permission state
-      if ('Notification' in window) {
-        if (Notification.permission === 'denied') {
-          toast({
-            title: "Notifications blocked",
-            description: "Please enable notifications in your browser settings to receive task reminders.",
-            variant: "destructive",
-            duration: 5000,
-          });
-          return;
-        }
-        
-        // Request permission when enabling
-        const granted = await requestNotificationPermission();
-        if (granted) {
-          updateSettings({ notificationsEnabled: true });
-          toast({
-            title: "Notifications enabled",
-            description: "You'll receive reminders when tasks are scheduled."
-          });
-        } else {
-          toast({
-            title: "Permission denied",
-            description: "Please allow notifications when prompted by your browser.",
-            variant: "destructive",
-            duration: 4000,
-          });
-        }
-      } else {
-        toast({
-          title: "Not supported",
-          description: "Your browser doesn't support notifications.",
-          variant: "destructive"
-        });
-      }
-    } else {
-      // Disable notifications
-      updateSettings({ notificationsEnabled: false });
-      toast({
-        title: "Notifications disabled",
-        description: "Task notifications have been turned off."
-      });
-    }
-  };
   return <div className="min-h-screen bg-balance-background">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-balance-background/95 backdrop-blur-sm border-b border-balance-surface-elevated">
@@ -309,40 +259,6 @@ export const Settings: React.FC = () => {
             </Card>
           </motion.div>
 
-          {/* Notifications Settings */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          duration: 0.3,
-          delay: 0.05
-        }}>
-            <Card className="surface p-6">
-              <h3 className="heading-sm text-balance-text-primary mb-4">
-                Notifications
-              </h3>
-              
-              <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
-                <div className="flex items-center space-x-3">
-                  <Bell className="w-5 h-5 text-balance-text-muted" />
-                  <div>
-                    <p className="body-md text-balance-text-primary">Task Notifications</p>
-                    <p className="text-xs text-balance-text-muted mt-1">
-                      Get notified when tasks are scheduled to start
-                    </p>
-                  </div>
-                </div>
-                <Switch
-                  checked={settings.notificationsEnabled}
-                  onCheckedChange={handleNotificationToggle}
-                />
-              </div>
-            </Card>
-          </motion.div>
-
           {/* Life Pillars Management */}
           <motion.div initial={{
           opacity: 0,
@@ -351,8 +267,7 @@ export const Settings: React.FC = () => {
           opacity: 1,
           y: 0
         }} transition={{
-          duration: 0.3,
-          delay: 0.1
+          duration: 0.3
         }}>
             <Card className="surface p-6">
               <div className="flex items-center justify-between mb-4">
@@ -417,7 +332,7 @@ export const Settings: React.FC = () => {
           opacity: 1,
           y: 0
         }} transition={{
-          delay: 0.15,
+          delay: 0.1,
           duration: 0.3
         }}>
             <Card className="surface p-6">

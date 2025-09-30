@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
 import { Balance } from "./pages/Balance";
 import { Plan } from "./pages/Plan";
 import { Profile } from "./pages/Profile";
@@ -12,27 +11,11 @@ import { Analytics } from "./pages/Analytics";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OnboardingDialog } from "./components/OnboardingDialog";
 import { useBalanceStore } from "./store";
-import { useNotifications } from "./hooks/use-notifications";
-import { registerServiceWorker } from "./utils/serviceWorker";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { settings, completeOnboarding } = useBalanceStore();
-  
-  // Initialize notifications system
-  useNotifications();
-
-  // Register service worker for push notifications
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      registerServiceWorker().then((registration) => {
-        if (registration) {
-          console.log('Service Worker ready for push notifications');
-        }
-      });
-    }
-  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
