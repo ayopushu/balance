@@ -19,19 +19,20 @@ export const useNotifications = () => {
       return;
     }
 
-    // Request permission if not already granted
-    if (Notification.permission === 'default') {
-      Notification.requestPermission();
+    // If permission is not granted, exit
+    if (Notification.permission !== 'granted') {
+      console.log('Notification permission not granted');
+      return;
     }
 
-    // If permission is denied, exit
-    if (Notification.permission !== 'granted') return;
-
-    // Get today's tasks
+    // Get today's tasks (not selected date - notifications are always for today)
     const today = format(new Date(), 'yyyy-MM-dd');
     const dayPlan = getDayPlan(today);
     
-    if (!dayPlan) return;
+    if (!dayPlan) {
+      console.log('No day plan for today');
+      return;
+    }
 
     // Schedule notifications for pending tasks
     const timeouts: NodeJS.Timeout[] = [];
@@ -48,7 +49,10 @@ export const useNotifications = () => {
       if (taskTime > now) {
         const delay = taskTime.getTime() - now.getTime();
 
+        console.log(`Scheduling notification for "${task.title}" in ${Math.round(delay/1000/60)} minutes`);
+
         const timeout = setTimeout(() => {
+          console.log(`Showing notification for: ${task.title}`);
           new Notification('Balance - Task Reminder', {
             body: `Time for: ${task.title}`,
             icon: '/icon-192.png',
@@ -62,11 +66,13 @@ export const useNotifications = () => {
       }
     });
 
+    console.log(`Scheduled ${timeouts.length} notifications for today`);
+
     // Cleanup function to clear all timeouts
     return () => {
       timeouts.forEach(timeout => clearTimeout(timeout));
     };
-  }, [settings.notificationsEnabled, selectedDate, getDayPlan]);
+  }, [settings.notificationsEnabled, getDayPlan]);
 };
 
 // Request notification permission

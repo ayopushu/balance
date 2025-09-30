@@ -215,24 +215,49 @@ export const Settings: React.FC = () => {
   // Handle notification toggle
   const handleNotificationToggle = async (enabled: boolean) => {
     if (enabled) {
-      const granted = await requestNotificationPermission();
-      if (!granted) {
+      // Check current permission state
+      if ('Notification' in window) {
+        if (Notification.permission === 'denied') {
+          toast({
+            title: "Notifications blocked",
+            description: "Please enable notifications in your browser settings to receive task reminders.",
+            variant: "destructive",
+            duration: 5000,
+          });
+          return;
+        }
+        
+        // Request permission when enabling
+        const granted = await requestNotificationPermission();
+        if (granted) {
+          updateSettings({ notificationsEnabled: true });
+          toast({
+            title: "Notifications enabled",
+            description: "You'll receive reminders when tasks are scheduled."
+          });
+        } else {
+          toast({
+            title: "Permission denied",
+            description: "Please allow notifications when prompted by your browser.",
+            variant: "destructive",
+            duration: 4000,
+          });
+        }
+      } else {
         toast({
-          title: "Permission denied",
-          description: "Please enable notifications in your browser settings.",
+          title: "Not supported",
+          description: "Your browser doesn't support notifications.",
           variant: "destructive"
         });
-        return;
       }
+    } else {
+      // Disable notifications
+      updateSettings({ notificationsEnabled: false });
+      toast({
+        title: "Notifications disabled",
+        description: "Task notifications have been turned off."
+      });
     }
-    
-    updateSettings({ notificationsEnabled: enabled });
-    toast({
-      title: enabled ? "Notifications enabled" : "Notifications disabled",
-      description: enabled 
-        ? "You'll receive reminders when tasks are scheduled." 
-        : "Task notifications have been turned off."
-    });
   };
   return <div className="min-h-screen bg-balance-background">
       {/* Header */}
