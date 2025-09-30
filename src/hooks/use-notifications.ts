@@ -1,13 +1,14 @@
 /**
- * Notifications Hook - Manages task notifications
+ * Notifications Hook - Manages task notifications with Service Worker support
  */
 
 import { useEffect } from 'react';
 import { useBalanceStore } from '@/store';
 import { format } from 'date-fns';
+import { scheduleNotificationViaServiceWorker } from '@/utils/serviceWorker';
 
 export const useNotifications = () => {
-  const { settings, getDayPlan, selectedDate } = useBalanceStore();
+  const { settings, getDayPlan } = useBalanceStore();
 
   useEffect(() => {
     // Exit if notifications are disabled
@@ -25,7 +26,7 @@ export const useNotifications = () => {
       return;
     }
 
-    // Get today's tasks (not selected date - notifications are always for today)
+    // Get today's tasks (notifications are always for today)
     const today = format(new Date(), 'yyyy-MM-dd');
     const dayPlan = getDayPlan(today);
     
@@ -36,6 +37,7 @@ export const useNotifications = () => {
 
     // Schedule notifications for pending tasks
     const timeouts: NodeJS.Timeout[] = [];
+    let scheduledCount = 0;
 
     dayPlan.items.forEach(task => {
       if (task.status !== 'pending' || !task.start) return;
@@ -48,25 +50,47 @@ export const useNotifications = () => {
       // Only schedule if task time is in the future
       if (taskTime > now) {
         const delay = taskTime.getTime() - now.getTime();
+        const timestamp = taskTime.getTime();
 
         console.log(`Scheduling notification for "${task.title}" in ${Math.round(delay/1000/60)} minutes`);
 
+        // Schedule via Service Worker for background notifications
+        if ('serviceWorker' in navigator) {
+          scheduleNotificationViaServiceWorker(
+            task.id,
+            'Balance - Task Reminder',
+            `Time for: ${task.title}`,
+            timestamp
+          );
+        }
+
+        // Also schedule via setTimeout as fallback
         const timeout = setTimeout(() => {
           console.log(`Showing notification for: ${task.title}`);
-          new Notification('Balance - Task Reminder', {
+          
+          // Show notification
+          const notification = new Notification('Balance - Task Reminder', {
             body: `Time for: ${task.title}`,
             icon: '/icon-192.png',
             badge: '/icon-192.png',
             tag: task.id,
             requireInteraction: false,
+            silent: false,
           });
+
+          // Handle notification click
+          notification.onclick = () => {
+            window.focus();
+            notification.close();
+          };
         }, delay);
 
         timeouts.push(timeout);
+        scheduledCount++;
       }
     });
 
-    console.log(`Scheduled ${timeouts.length} notifications for today`);
+    console.log(`Scheduled ${scheduledCount} notifications for today`);
 
     // Cleanup function to clear all timeouts
     return () => {
@@ -78,6 +102,7 @@ export const useNotifications = () => {
 // Request notification permission
 export const requestNotificationPermission = async (): Promise<boolean> => {
   if (!('Notification' in window)) {
+    console.log('Notifications not supported');
     return false;
   }
 
