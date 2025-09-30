@@ -36,7 +36,7 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/50"
+            className="absolute inset-0 bg-black/80"
           />
           
           {/* iOS-style popup */}
@@ -44,7 +44,7 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative bg-balance-surface rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4"
+            className="relative bg-[#1a1a1a] rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4"
           >
             <div className="text-center mb-6">
               <h3 className="text-lg font-semibold text-balance-text-primary mb-2">
