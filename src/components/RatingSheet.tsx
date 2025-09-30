@@ -36,7 +36,7 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/80"
+            className="absolute inset-0 bg-black/95"
           />
           
           {/* iOS-style popup */}
@@ -44,13 +44,13 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="relative bg-[#1a1a1a] rounded-2xl p-6 shadow-2xl max-w-sm w-full mx-4"
+            className="relative bg-[#0a0a0a] rounded-2xl p-6 shadow-2xl border border-white/5 max-w-sm w-full mx-4"
           >
             <div className="text-center mb-6">
-              <h3 className="text-lg font-semibold text-balance-text-primary mb-2">
+              <h3 className="text-lg font-semibold text-white mb-2">
                 How did it go?
               </h3>
-              <p className="text-sm text-balance-text-secondary">
+              <p className="text-sm text-gray-400">
                 {taskTitle}
               </p>
             </div>
@@ -97,7 +97,7 @@ export const RatingSheet: React.FC<RatingSheetProps> = ({
               onClick={onClose}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full mt-4 h-12 rounded-xl bg-balance-surface-elevated text-balance-text-muted hover:text-balance-text-primary transition-all"
+              className="w-full mt-4 h-12 rounded-xl bg-[#1a1a1a] text-gray-400 hover:text-white border border-white/10 transition-all"
             >
               Cancel
             </motion.button>
