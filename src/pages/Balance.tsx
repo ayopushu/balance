@@ -194,28 +194,6 @@ export const Balance: React.FC = () => {
             </motion.div>
           )}
 
-          {pendingItems.length === 0 && dayItems.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-center py-12"
-            >
-              <h3 className="text-lg font-medium text-balance-text-secondary mb-2">
-                No tasks for {isToday ? 'today' : 'this day'}
-              </h3>
-              <p className="text-sm text-balance-text-muted mb-4">
-                Your day plan will be generated automatically.
-              </p>
-              <Button
-                onClick={() => generateDayPlan(selectedDate)}
-                className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Generate Day Plan
-              </Button>
-            </motion.div>
-          )}
         </div>
       </ScrollArea>
 

@@ -398,26 +398,6 @@ export const Plan: React.FC = () => {
               );
             })}
             
-            {!selectedDayPlan || selectedDayPlan.items.length === 0 ? (
-              <Card className="surface p-8">
-                <div className="text-center">
-                  <h3 className="text-lg font-medium text-balance-text-secondary mb-2">
-                    No tasks planned
-                  </h3>
-                  <p className="text-sm text-balance-text-muted mb-4">
-                    Generate a day plan to get started.
-                  </p>
-                  {!isDayPast(selectedDateObj) && (
-                    <Button
-                      onClick={() => generateDayPlan(selectedDate)}
-                      className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
-                    >
-                      Generate Plan
-                    </Button>
-                  )}
-                </div>
-              </Card>
-            ) : null}
           </div>
         </div>
       </ScrollArea>
