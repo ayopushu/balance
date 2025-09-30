@@ -468,7 +468,7 @@ export const Plan: React.FC = () => {
 
       {/* Add Task Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-md bg-[#0a1929] border border-[#1e3a5f]/50 rounded-3xl shadow-2xl">
+        <DialogContent className="sm:max-w-md bg-black/95 backdrop-blur-xl border border-white/10 rounded-3xl">
           <div className="space-y-6 py-4">
             <ScrollableTimePicker
               label="Start time"
@@ -484,7 +484,7 @@ export const Plan: React.FC = () => {
                 id="addTitle"
                 value={editForm.title}
                 onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                className="mt-2 bg-[#132f4c] border-[#1e3a5f] text-white placeholder:text-white/40 rounded-xl h-12"
+                className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-xl h-12"
                 placeholder="Enter task name"
               />
             </div>
@@ -496,7 +496,7 @@ export const Plan: React.FC = () => {
             />
           </div>
           
-          <DialogFooter className="flex flex-row justify-between items-center pt-4 border-t border-[#1e3a5f]/50">
+          <DialogFooter className="flex flex-row justify-between items-center pt-4 border-t border-white/10">
             <Button 
               variant="ghost" 
               onClick={() => setShowAddDialog(false)}
