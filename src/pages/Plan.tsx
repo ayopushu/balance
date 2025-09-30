@@ -18,13 +18,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { ScrollableTimePicker } from '@/components/ScrollableTimePicker';
 import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import type { DayItem } from '@/store/types';
@@ -474,69 +468,48 @@ export const Plan: React.FC = () => {
 
       {/* Add Task Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="sm:max-w-md surface rounded-balance">
-          <DialogHeader>
-            <DialogTitle className="heading-md text-balance-text-primary">
-              Add New Task
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="addTitle" className="body-md text-balance-text-secondary">
-                Task Title
+        <DialogContent className="sm:max-w-md bg-black/95 backdrop-blur-xl border border-white/10 rounded-3xl">
+          <div className="space-y-6 py-4">
+            <ScrollableTimePicker
+              label="Start time"
+              value={editForm.start || '07:00'}
+              onChange={(time) => setEditForm(prev => ({ ...prev, start: time }))}
+            />
+            
+            <div className="px-2">
+              <Label htmlFor="addTitle" className="text-xs text-balance-text-muted uppercase tracking-wider">
+                Task name
               </Label>
               <Input
                 id="addTitle"
                 value={editForm.title}
                 onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                className="surface-elevated border-balance-surface-elevated rounded-balance mt-1"
-                placeholder="Enter task title"
+                className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-xl h-12"
+                placeholder="Enter task name"
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="addStart" className="body-md text-balance-text-secondary">
-                  Start Time
-                </Label>
-                <Input
-                  id="addStart"
-                  type="time"
-                  value={editForm.start}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, start: e.target.value }))}
-                  className="surface-elevated border-balance-surface-elevated rounded-balance mt-1"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="addEnd" className="body-md text-balance-text-secondary">
-                  End Time
-                </Label>
-                <Input
-                  id="addEnd"
-                  type="time"
-                  value={editForm.end}
-                  onChange={(e) => setEditForm(prev => ({ ...prev, end: e.target.value }))}
-                  className="surface-elevated border-balance-surface-elevated rounded-balance mt-1"
-                />
-              </div>
-            </div>
+            <ScrollableTimePicker
+              label="End time"
+              value={editForm.end || '08:00'}
+              onChange={(time) => setEditForm(prev => ({ ...prev, end: time }))}
+            />
           </div>
           
-          <DialogFooter className="flex space-x-3">
+          <DialogFooter className="flex flex-row justify-between items-center pt-4 border-t border-white/10">
             <Button 
               variant="ghost" 
               onClick={() => setShowAddDialog(false)}
-              className="rounded-balance"
+              className="text-health hover:text-health/80 hover:bg-transparent text-base"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleSaveAdd}
-              className="bg-health hover:bg-health/90 text-white rounded-balance"
+              className="text-health hover:text-health/80 hover:bg-transparent text-base font-medium"
+              variant="ghost"
             >
-              Add Task
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>
