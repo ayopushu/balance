@@ -11,11 +11,15 @@ import { Analytics } from "./pages/Analytics";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OnboardingDialog } from "./components/OnboardingDialog";
 import { useBalanceStore } from "./store";
+import { useNotifications } from "./hooks/use-notifications";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { settings, completeOnboarding } = useBalanceStore();
+  
+  // Initialize notifications system
+  useNotifications();
 
   return (
     <QueryClientProvider client={queryClient}>
