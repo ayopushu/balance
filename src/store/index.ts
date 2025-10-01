@@ -35,9 +35,10 @@ const DEFAULT_SETTINGS: Settings = {
   userName: 'User',
   specialRollOver: true,
   chartType: 'donut',
-  notificationsEnabled: true,
+  notificationsEnabled: false,
   hapticFeedback: true,
   isFirstTime: true,
+  hasSeenNotificationPrompt: false,
 };
 
 export const useBalanceStore = create<AppState>()(
