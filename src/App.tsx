@@ -10,29 +10,12 @@ import { Settings } from "./pages/Settings";
 import { Analytics } from "./pages/Analytics";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OnboardingDialog } from "./components/OnboardingDialog";
-import { NotificationPermissionDialog } from "./components/NotificationPermissionDialog";
 import { useBalanceStore } from "./store";
-import { useNotifications } from "./hooks/useNotifications";
-import { useState } from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const { settings, completeOnboarding } = useBalanceStore();
-  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
-  
-  // Initialize notifications hook
-  useNotifications();
-
-  const handleOnboardingComplete = (userName: string, pillars: any[]) => {
-    completeOnboarding(userName, pillars);
-    // Show notification permission dialog after onboarding
-    setShowNotificationDialog(true);
-  };
-
-  const handleNotificationDialogComplete = () => {
-    setShowNotificationDialog(false);
-  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -53,13 +36,7 @@ const App = () => {
             {/* Onboarding Dialog */}
             <OnboardingDialog
               isOpen={settings.isFirstTime}
-              onComplete={handleOnboardingComplete}
-            />
-
-            {/* Notification Permission Dialog */}
-            <NotificationPermissionDialog
-              isOpen={showNotificationDialog && !settings.hasSeenNotificationPrompt}
-              onComplete={handleNotificationDialogComplete}
+              onComplete={completeOnboarding}
             />
           </div>
         </BrowserRouter>

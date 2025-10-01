@@ -67,7 +67,6 @@ export interface Settings {
   notificationsEnabled: boolean;
   hapticFeedback: boolean;
   isFirstTime: boolean;
-  hasSeenNotificationPrompt: boolean;
 }
 
 export interface AppState {
