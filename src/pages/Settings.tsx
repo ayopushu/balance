@@ -350,71 +350,94 @@ export const Settings: React.FC = () => {
                       Get notified when tasks are due
                     </p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.notificationsEnabled}
-                      onChange={async (e) => {
-                        const enabled = e.target.checked;
+                  <button
+                    onClick={async () => {
+                      console.log('🔔 Toggle clicked');
+                      console.log('Current state:', settings.notificationsEnabled);
+                      console.log('Browser permission:', Notification.permission);
+                      
+                      const currentlyEnabled = settings.notificationsEnabled;
+                      
+                      if (!currentlyEnabled) {
+                        // User wants to enable notifications
+                        console.log('📱 Attempting to enable notifications...');
                         
-                        if (enabled) {
-                          // Check browser support
-                          if (!('Notification' in window)) {
-                            toast({
-                              title: "Not supported",
-                              description: "Notifications are not supported on this device.",
-                              variant: "destructive",
-                            });
-                            return;
-                          }
-
-                          // Check permission status
-                          if (Notification.permission === 'denied') {
-                            toast({
-                              title: "Notifications Blocked",
-                              description: "Enable notifications in your browser settings to use this feature.",
-                              variant: "destructive",
-                            });
-                            return;
-                          }
-
-                          // Request permission if needed
-                          if (Notification.permission === 'default') {
-                            const permission = await Notification.requestPermission();
-                            if (permission !== 'granted') {
-                              toast({
-                                title: "Permission denied",
-                                description: "Notification permission was not granted.",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                          }
-
-                          // Enable notifications
-                          updateSettings({ notificationsEnabled: true });
+                        // Check browser support
+                        if (!('Notification' in window)) {
+                          console.log('❌ Notifications not supported');
                           toast({
-                            title: "Notifications enabled",
-                            description: "You'll be reminded about your scheduled tasks.",
+                            title: "Not supported",
+                            description: "Notifications are not supported on this device.",
+                            variant: "destructive",
                           });
-                        } else {
-                          // Disable notifications
-                          updateSettings({ notificationsEnabled: false });
-                          toast({
-                            title: "Notifications disabled",
-                            description: "Task reminders have been turned off.",
-                          });
+                          return;
                         }
-                      }}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-balance-surface-elevated rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-health"></div>
-                  </label>
+
+                        // Check permission status
+                        if (Notification.permission === 'denied') {
+                          console.log('❌ Permission denied by browser');
+                          toast({
+                            title: "Notifications Blocked",
+                            description: "Enable notifications in your browser settings to use this feature.",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+
+                        // Request permission if needed
+                        if (Notification.permission === 'default') {
+                          console.log('📋 Requesting permission...');
+                          const permission = await Notification.requestPermission();
+                          console.log('📋 Permission result:', permission);
+                          
+                          if (permission !== 'granted') {
+                            console.log('❌ User denied permission');
+                            toast({
+                              title: "Permission denied",
+                              description: "Notification permission was not granted.",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+                        }
+
+                        // Enable notifications
+                        console.log('✅ Enabling notifications in app state');
+                        updateSettings({ notificationsEnabled: true });
+                        console.log('✅ State updated to:', true);
+                        
+                        toast({
+                          title: "Notifications enabled",
+                          description: "You'll be reminded about your scheduled tasks.",
+                        });
+                      } else {
+                        // User wants to disable notifications
+                        console.log('🔕 Disabling notifications...');
+                        updateSettings({ notificationsEnabled: false });
+                        console.log('✅ State updated to:', false);
+                        
+                        toast({
+                          title: "Notifications disabled",
+                          description: "Task reminders have been turned off.",
+                        });
+                      }
+                    }}
+                    className="relative inline-flex items-center cursor-pointer"
+                    type="button"
+                  >
+                    <div className={`w-11 h-6 rounded-full transition-colors ${
+                      settings.notificationsEnabled ? 'bg-health' : 'bg-balance-surface-elevated'
+                    }`}>
+                      <div className={`absolute top-[2px] left-[2px] bg-white rounded-full h-5 w-5 transition-transform ${
+                        settings.notificationsEnabled ? 'translate-x-5' : 'translate-x-0'
+                      }`} />
+                    </div>
+                  </button>
                 </div>
 
                 {/* Status indicator */}
                 <div className="p-3 surface-elevated rounded-balance">
-                  {settings.notificationsEnabled && Notification.permission === 'granted' && (
+                  {settings.notificationsEnabled && ('Notification' in window) && Notification.permission === 'granted' && (
                     <div className="flex items-center text-health text-sm">
                       <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -427,7 +450,7 @@ export const Settings: React.FC = () => {
                       Notifications are off
                     </div>
                   )}
-                  {settings.notificationsEnabled && Notification.permission === 'denied' && (
+                  {settings.notificationsEnabled && ('Notification' in window) && Notification.permission === 'denied' && (
                     <div className="flex items-start text-yellow-500 text-sm">
                       <svg className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />

@@ -24,7 +24,10 @@ export const NotificationPermissionDialog: React.FC<NotificationPermissionDialog
   const { toast } = useToast();
 
   const handleAllowNotifications = async () => {
+    console.log('🔔 Allow Notifications clicked');
+    
     if (!('Notification' in window)) {
+      console.log('❌ Notifications not supported');
       toast({
         title: "Not supported",
         description: "Notifications are not supported on this device.",
@@ -39,30 +42,51 @@ export const NotificationPermissionDialog: React.FC<NotificationPermissionDialog
     }
 
     try {
+      console.log('📋 Requesting notification permission...');
       const permission = await Notification.requestPermission();
+      console.log('📋 Permission result:', permission);
       
-      updateSettings({ 
-        hasSeenNotificationPrompt: true,
-        notificationsEnabled: permission === 'granted'
-      });
-
       if (permission === 'granted') {
+        console.log('✅ Permission granted, updating state...');
+        updateSettings({ 
+          hasSeenNotificationPrompt: true,
+          notificationsEnabled: true
+        });
+        console.log('✅ State updated successfully');
+        
         toast({
           title: "Notifications enabled!",
           description: "You'll be reminded about your tasks at their scheduled time.",
         });
       } else if (permission === 'denied') {
+        console.log('❌ Permission denied');
+        updateSettings({ 
+          hasSeenNotificationPrompt: true,
+          notificationsEnabled: false
+        });
+        
         toast({
           title: "Notifications blocked",
           description: "You can enable them later in Settings.",
           variant: "destructive",
         });
+      } else {
+        console.log('⏸️ Permission default (dismissed)');
+        updateSettings({ 
+          hasSeenNotificationPrompt: true,
+          notificationsEnabled: false
+        });
       }
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
+      console.error('❌ Error requesting notification permission:', error);
       updateSettings({ 
         hasSeenNotificationPrompt: true,
         notificationsEnabled: false 
+      });
+      toast({
+        title: "Error",
+        description: "Failed to enable notifications.",
+        variant: "destructive",
       });
     }
 
