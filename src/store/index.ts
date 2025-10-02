@@ -24,18 +24,13 @@ const DEFAULT_PILLARS: Pillar[] = [
   { id: 'work', name: 'Work', color: '#ffde59', order: 2 },
 ];
 
-const DEFAULT_CATEGORIES: Category[] = [
-  { id: 'exercise', pillarId: 'health', name: 'Exercise', recurrence: 'daily', defaultStart: '07:00', defaultEnd: '08:00' },
-  { id: 'meditation', pillarId: 'health', name: 'Meditation', recurrence: 'daily', defaultStart: '06:30', defaultEnd: '07:00' },
-  { id: 'family-time', pillarId: 'relationships', name: 'Family Time', recurrence: 'daily', defaultStart: '18:00', defaultEnd: '19:00' },
-  { id: 'deep-work', pillarId: 'work', name: 'Deep Work', recurrence: 'daily', defaultStart: '09:00', defaultEnd: '11:00' },
-];
+const DEFAULT_CATEGORIES: Category[] = [];
 
 const DEFAULT_SETTINGS: Settings = {
   userName: 'User',
   specialRollOver: true,
   chartType: 'donut',
-  notificationsEnabled: true,
+  notificationsEnabled: false,
   hapticFeedback: true,
   isFirstTime: true,
 };
