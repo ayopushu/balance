@@ -43,6 +43,9 @@ export const Balance: React.FC = () => {
 
   // Filter out completed/skipped tasks for Balance view
   const pendingItems = dayItems.filter(item => item.status === 'pending');
+  
+  // Check if any tasks have been completed
+  const hasCompletedTasks = dayItems.some(item => item.status !== 'pending');
 
   // Group pending tasks by pillar
   const tasksByPillar = pillars.map(pillar => {
@@ -176,21 +179,45 @@ export const Balance: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="text-center py-12"
             >
-              <div className="w-16 h-16 bg-gradient-to-r from-health via-relationships to-work rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle2 className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-lg font-medium text-balance-text-primary mb-2">
-                All tasks completed!
-              </h3>
-              <p className="text-sm text-balance-text-muted mb-4">
-                Great job! You've finished all your tasks for {isToday ? 'today' : 'this day'}.
-              </p>
-              <Button
-                onClick={() => navigate('/analytics')}
-                className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
-              >
-                View Analytics
-              </Button>
+              {hasCompletedTasks ? (
+                // All tasks completed
+                <>
+                  <div className="w-16 h-16 bg-gradient-to-r from-health via-relationships to-work rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-medium text-balance-text-primary mb-2">
+                    All tasks completed!
+                  </h3>
+                  <p className="text-sm text-balance-text-muted mb-4">
+                    Great job! You've finished all your tasks for {isToday ? 'today' : 'this day'}.
+                  </p>
+                  <Button
+                    onClick={() => navigate('/analytics')}
+                    className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
+                  >
+                    View Analytics
+                  </Button>
+                </>
+              ) : (
+                // No tasks created yet
+                <>
+                  <div className="w-16 h-16 bg-balance-surface-elevated rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Plus className="w-8 h-8 text-balance-text-muted" />
+                  </div>
+                  <h3 className="text-lg font-medium text-balance-text-primary mb-2">
+                    No tasks yet
+                  </h3>
+                  <p className="text-sm text-balance-text-muted mb-4">
+                    Go to Plan tab to add tasks for {isToday ? 'today' : 'this day'}.
+                  </p>
+                  <Button
+                    onClick={() => navigate('/plan')}
+                    className="bg-health hover:bg-health/90 text-white rounded-lg px-6 py-2"
+                  >
+                    Plan Tasks
+                  </Button>
+                </>
+              )}
             </motion.div>
           )}
 

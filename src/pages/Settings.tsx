@@ -3,8 +3,8 @@
  * Manage pillars, colors, and data operations
  */
 
-import React, { useState } from 'react';
-import { ArrowLeft, Plus, Edit2, Trash2, Download, Upload, AlertTriangle, Palette } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Plus, Edit2, Trash2, Download, Upload, AlertTriangle, Palette, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -67,6 +67,12 @@ export const Settings: React.FC = () => {
   const [resetConfirmText, setResetConfirmText] = useState('');
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState(settings.userName);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(settings.notificationsEnabled);
+
+  // Sync notifications state with settings
+  useEffect(() => {
+    setNotificationsEnabled(settings.notificationsEnabled);
+  }, [settings.notificationsEnabled]);
 
   // Handle pillar name update
   const handlePillarUpdate = (pillarId: string, newName: string) => {
@@ -209,6 +215,60 @@ export const Settings: React.FC = () => {
       description: "Your name has been saved successfully."
     });
   };
+
+  // Handle notification toggle
+  const handleNotificationToggle = async () => {
+    const newValue = !notificationsEnabled;
+    
+    if (newValue) {
+      // User wants to enable notifications
+      if (!('Notification' in window)) {
+        toast({
+          title: "Not supported",
+          description: "Notifications are not supported on this browser.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (Notification.permission === 'denied') {
+        toast({
+          title: "Notifications blocked",
+          description: "Please enable notifications in your browser settings.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (Notification.permission === 'default') {
+        const permission = await Notification.requestPermission();
+        if (permission !== 'granted') {
+          toast({
+            title: "Permission denied",
+            description: "Notification permission was not granted.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+
+      // Update state
+      setNotificationsEnabled(true);
+      updateSettings({ notificationsEnabled: true });
+      toast({
+        title: "Notifications enabled",
+        description: "You'll receive task reminders."
+      });
+    } else {
+      // User wants to disable notifications
+      setNotificationsEnabled(false);
+      updateSettings({ notificationsEnabled: false });
+      toast({
+        title: "Notifications disabled",
+        description: "You won't receive task reminders."
+      });
+    }
+  };
   return <div className="min-h-screen bg-balance-background">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-balance-background/95 backdrop-blur-sm border-b border-balance-surface-elevated">
@@ -324,7 +384,7 @@ export const Settings: React.FC = () => {
             </Card>
           </motion.div>
 
-          {/* Data Management */}
+          {/* Notifications */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -333,6 +393,69 @@ export const Settings: React.FC = () => {
           y: 0
         }} transition={{
           delay: 0.1,
+          duration: 0.3
+        }}>
+            <Card className="surface p-6">
+              <h3 className="heading-sm text-balance-text-primary mb-4">
+                Notifications
+              </h3>
+              
+              <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
+                <div className="flex items-center space-x-3">
+                  <Bell className="w-5 h-5 text-balance-text-muted" />
+                  <div>
+                    <p className="body-md text-balance-text-primary">Task Reminders</p>
+                    <p className="text-xs text-balance-text-muted mt-0.5">
+                      Get notified when tasks are due
+                    </p>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handleNotificationToggle}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    notificationsEnabled ? 'bg-health' : 'bg-gray-600'
+                  }`}
+                  role="switch"
+                  aria-checked={notificationsEnabled}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      notificationsEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Status indicator */}
+              <div className="mt-3 px-3">
+                {notificationsEnabled && 'Notification' in window && Notification.permission === 'granted' && (
+                  <p className="text-xs text-green-500">✓ Notifications are enabled</p>
+                )}
+                {!notificationsEnabled && (
+                  <p className="text-xs text-gray-500">Notifications are off</p>
+                )}
+                {'Notification' in window && notificationsEnabled && Notification.permission === 'denied' && (
+                  <p className="text-xs text-yellow-500">
+                    ⚠️ Notifications blocked in browser. Enable them in browser settings.
+                  </p>
+                )}
+                {!('Notification' in window) && (
+                  <p className="text-xs text-gray-500">Notifications not supported on this device</p>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+
+          {/* Data Management */}
+          <motion.div initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.2,
           duration: 0.3
         }}>
             <Card className="surface p-6">
