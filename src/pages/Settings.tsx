@@ -231,34 +231,25 @@ export const Settings: React.FC = () => {
         return;
       }
 
-      if (Notification.permission === 'denied') {
+      // Request permission - this shows the real browser popup
+      const permission = await Notification.requestPermission();
+      
+      if (permission === 'granted') {
+        // Update state
+        setNotificationsEnabled(true);
+        updateSettings({ notificationsEnabled: true });
         toast({
-          title: "Notifications blocked",
-          description: "Please enable notifications in your browser settings.",
+          title: "Notifications enabled",
+          description: "You'll receive task reminders."
+        });
+      } else {
+        // User denied or dismissed
+        toast({
+          title: "Permission denied",
+          description: "You need to allow notifications in the browser popup.",
           variant: "destructive"
         });
-        return;
       }
-
-      if (Notification.permission === 'default') {
-        const permission = await Notification.requestPermission();
-        if (permission !== 'granted') {
-          toast({
-            title: "Permission denied",
-            description: "Notification permission was not granted.",
-            variant: "destructive"
-          });
-          return;
-        }
-      }
-
-      // Update state
-      setNotificationsEnabled(true);
-      updateSettings({ notificationsEnabled: true });
-      toast({
-        title: "Notifications enabled",
-        description: "You'll receive task reminders."
-      });
     } else {
       // User wants to disable notifications
       setNotificationsEnabled(false);
