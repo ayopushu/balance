@@ -1,25 +1,30 @@
 /**
- * Simple notification system for task reminders
+ * Simple notification scheduler for task reminders
  */
 
 import type { DayItem } from '@/store/types';
 
-// Store scheduled notifications
-const notifications = new Map<string, number>();
+// Store active timeouts
+const scheduledNotifications = new Map<string, number>();
 
 /**
  * Schedule a notification for a task
  */
-export const scheduleNotification = (task: DayItem) => {
-  // Cancel existing notification for this task
-  cancelNotification(task.id);
+export const scheduleTaskNotification = (task: DayItem, notificationsEnabled: boolean) => {
+  // Cancel any existing notification for this task
+  cancelTaskNotification(task.id);
 
-  // Don't schedule if no time or already completed
-  if (!task.start || !task.date || task.status !== 'pending') {
+  // Don't schedule if notifications are disabled or task has no start time
+  if (!notificationsEnabled || !task.start || !task.date) {
     return;
   }
 
-  // Check browser support and permission
+  // Don't schedule if task is already completed or skipped
+  if (task.status === 'done' || task.status === 'skipped') {
+    return;
+  }
+
+  // Check browser support
   if (!('Notification' in window) || Notification.permission !== 'granted') {
     return;
   }
@@ -27,25 +32,30 @@ export const scheduleNotification = (task: DayItem) => {
   try {
     // Parse task time
     const [hours, minutes] = task.start.split(':').map(Number);
-    const taskTime = new Date(task.date);
-    taskTime.setHours(hours, minutes, 0, 0);
+    const taskDateTime = new Date(task.date);
+    taskDateTime.setHours(hours, minutes, 0, 0);
 
     // Calculate delay
     const now = new Date();
-    const delay = taskTime.getTime() - now.getTime();
+    const delay = taskDateTime.getTime() - now.getTime();
 
-    // Only schedule future tasks
+    // Only schedule if time is in the future
     if (delay > 0) {
       const timeoutId = window.setTimeout(() => {
+        // Show notification
         new Notification(`Time for: ${task.title}`, {
           body: 'Your task is starting now',
           icon: '/icon-192.png',
+          badge: '/icon-192.png',
           tag: task.id,
         });
-        notifications.delete(task.id);
+
+        // Remove from scheduled map
+        scheduledNotifications.delete(task.id);
       }, delay);
 
-      notifications.set(task.id, timeoutId);
+      // Store timeout ID
+      scheduledNotifications.set(task.id, timeoutId);
     }
   } catch (error) {
     console.error('Error scheduling notification:', error);
@@ -53,41 +63,47 @@ export const scheduleNotification = (task: DayItem) => {
 };
 
 /**
- * Cancel a notification
+ * Cancel a scheduled notification
  */
-export const cancelNotification = (taskId: string) => {
-  const timeoutId = notifications.get(taskId);
+export const cancelTaskNotification = (taskId: string) => {
+  const timeoutId = scheduledNotifications.get(taskId);
   if (timeoutId) {
     clearTimeout(timeoutId);
-    notifications.delete(taskId);
+    scheduledNotifications.delete(taskId);
   }
 };
 
 /**
- * Cancel all notifications
+ * Cancel all scheduled notifications
  */
 export const cancelAllNotifications = () => {
-  notifications.forEach(timeoutId => clearTimeout(timeoutId));
-  notifications.clear();
+  scheduledNotifications.forEach(timeoutId => clearTimeout(timeoutId));
+  scheduledNotifications.clear();
 };
 
 /**
  * Reschedule all pending tasks
  */
-export const rescheduleAll = (tasks: DayItem[], enabled: boolean) => {
+export const rescheduleAllTasks = (tasks: DayItem[], notificationsEnabled: boolean) => {
+  // Cancel all existing
   cancelAllNotifications();
 
-  if (!enabled) return;
+  // Don't schedule if disabled
+  if (!notificationsEnabled) {
+    return;
+  }
 
+  // Schedule all pending tasks with future times
   const now = new Date();
   tasks.forEach(task => {
     if (task.status === 'pending' && task.start && task.date) {
       const [hours, minutes] = task.start.split(':').map(Number);
-      const taskTime = new Date(task.date);
-      taskTime.setHours(hours, minutes, 0, 0);
+      const taskDateTime = new Date(task.date);
+      taskDateTime.setHours(hours, minutes, 0, 0);
 
-      if (taskTime > now) {
-        scheduleNotification(task);
+      // Only schedule future tasks
+      if (taskDateTime > now) {
+        scheduleTaskNotification(task, notificationsEnabled);
       }
     }
   });

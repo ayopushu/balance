@@ -6,8 +6,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { format, addDays } from 'date-fns';
-import { scheduleNotification, cancelNotification, rescheduleAll } from '@/utils/notifications';
-import type {
+import { scheduleTaskNotification, cancelTaskNotification, rescheduleAllTasks } from '@/utils/notifications';
+import type { 
   AppState, 
   Pillar, 
   Category, 
@@ -157,16 +157,17 @@ export const useBalanceStore = create<AppState>()(
 
         const updatedItems = dayPlan.items.map(item => {
           if (item.id === itemId) {
-            const updated = { ...item, ...updates };
+            const updatedItem = { ...item, ...updates };
             
-            // Reschedule or cancel notification
-            if (updated.status === 'pending' && state.settings.notificationsEnabled) {
-              scheduleNotification(updated);
+            // Reschedule notification if task was updated
+            if (updatedItem.status === 'pending') {
+              scheduleTaskNotification(updatedItem, state.settings.notificationsEnabled);
             } else {
-              cancelNotification(itemId);
+              // Cancel notification if completed or skipped
+              cancelTaskNotification(itemId);
             }
             
-            return updated;
+            return updatedItem;
           }
           return item;
         });
@@ -192,10 +193,8 @@ export const useBalanceStore = create<AppState>()(
           ...itemData,
         };
 
-        // Schedule notification if enabled
-        if (state.settings.notificationsEnabled) {
-          scheduleNotification(newItem);
-        }
+        // Schedule notification for new task
+        scheduleTaskNotification(newItem, state.settings.notificationsEnabled);
 
         if (dayPlan) {
           return {
@@ -231,8 +230,8 @@ export const useBalanceStore = create<AppState>()(
         const item = dayPlan.items.find(i => i.id === itemId);
         if (!item) return state;
 
-        // Cancel notification
-        cancelNotification(itemId);
+        // Cancel notification when task is completed
+        cancelTaskNotification(itemId);
         
         // Calculate minutes if not provided
         let finalMinutes = minutes;
@@ -291,13 +290,15 @@ export const useBalanceStore = create<AppState>()(
       updateSettings: (updates) => set((state) => {
         const newSettings = { ...state.settings, ...updates };
         
-        // Reschedule notifications if toggled
+        // If notifications were toggled, reschedule or cancel all
         if ('notificationsEnabled' in updates) {
           const allTasks = Object.values(state.dayPlans).flatMap(plan => plan.items);
-          rescheduleAll(allTasks, newSettings.notificationsEnabled);
+          rescheduleAllTasks(allTasks, newSettings.notificationsEnabled);
         }
         
-        return { settings: newSettings };
+        return {
+          settings: newSettings,
+        };
       }),
 
       // Complete onboarding
