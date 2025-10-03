@@ -10,9 +10,9 @@ import { Settings } from "./pages/Settings";
 import { Analytics } from "./pages/Analytics";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { OnboardingDialog } from "./components/OnboardingDialog";
-import { NotificationPermissionDialog } from "./components/NotificationPermissionDialog";
+import { NotificationDialog } from "./components/NotificationDialog";
 import { useBalanceStore } from "./store";
-import { useNotificationScheduler } from "./hooks/useNotificationScheduler";
+import { useNotifications } from "./hooks/useNotifications";
 import { useState, useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -21,29 +21,19 @@ const App = () => {
   const { settings, completeOnboarding } = useBalanceStore();
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
 
-  // Initialize notification scheduler on app load
-  useNotificationScheduler();
+  // Initialize notifications
+  useNotifications();
 
-  // Show notification permission dialog after onboarding is complete
+  // Show notification dialog after onboarding
   useEffect(() => {
-    if (!settings.isFirstTime) {
-      // Check if we should show notification dialog
-      const hasAskedForNotifications = localStorage.getItem('hasAskedForNotifications');
-      
-      if (!hasAskedForNotifications) {
-        // Small delay to let the UI settle after onboarding
-        const timer = setTimeout(() => {
-          setShowNotificationDialog(true);
-        }, 500);
-        
-        return () => clearTimeout(timer);
-      }
+    if (!settings.isFirstTime && !localStorage.getItem('notificationAsked')) {
+      setTimeout(() => setShowNotificationDialog(true), 500);
     }
   }, [settings.isFirstTime]);
 
-  const handleNotificationDialogClose = () => {
+  const handleNotificationClose = () => {
     setShowNotificationDialog(false);
-    localStorage.setItem('hasAskedForNotifications', 'true');
+    localStorage.setItem('notificationAsked', 'true');
   };
 
   return (
@@ -68,10 +58,10 @@ const App = () => {
               onComplete={completeOnboarding}
             />
             
-            {/* Notification Permission Dialog */}
-            <NotificationPermissionDialog 
+            {/* Notification Dialog */}
+            <NotificationDialog 
               isOpen={showNotificationDialog}
-              onClose={handleNotificationDialogClose}
+              onClose={handleNotificationClose}
             />
           </div>
         </BrowserRouter>
