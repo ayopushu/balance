@@ -12,6 +12,7 @@ import { BottomNavigation } from "./components/BottomNavigation";
 import { OnboardingDialog } from "./components/OnboardingDialog";
 import { NotificationPermissionDialog } from "./components/NotificationPermissionDialog";
 import { useBalanceStore } from "./store";
+import { useNotificationScheduler } from "./hooks/useNotificationScheduler";
 import { useState, useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,9 @@ const queryClient = new QueryClient();
 const App = () => {
   const { settings, completeOnboarding } = useBalanceStore();
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+
+  // Initialize notification scheduler on app load
+  useNotificationScheduler();
 
   // Show notification permission dialog after onboarding is complete
   useEffect(() => {

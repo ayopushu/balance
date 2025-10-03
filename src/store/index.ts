@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { format, addDays } from 'date-fns';
+import { scheduleTaskNotification, cancelTaskNotification, rescheduleAllTasks } from '@/utils/notifications';
 import type { 
   AppState, 
   Pillar, 
@@ -154,15 +155,30 @@ export const useBalanceStore = create<AppState>()(
         const dayPlan = state.dayPlans[date];
         if (!dayPlan) return state;
 
+        const updatedItems = dayPlan.items.map(item => {
+          if (item.id === itemId) {
+            const updatedItem = { ...item, ...updates };
+            
+            // Reschedule notification if task was updated
+            if (updatedItem.status === 'pending') {
+              scheduleTaskNotification(updatedItem, state.settings.notificationsEnabled);
+            } else {
+              // Cancel notification if completed or skipped
+              cancelTaskNotification(itemId);
+            }
+            
+            return updatedItem;
+          }
+          return item;
+        });
+
         return {
           ...state,
           dayPlans: {
             ...state.dayPlans,
             [date]: {
               ...dayPlan,
-              items: dayPlan.items.map(item => 
-                item.id === itemId ? { ...item, ...updates } : item
-              ),
+              items: updatedItems,
             },
           },
         };
@@ -176,6 +192,9 @@ export const useBalanceStore = create<AppState>()(
           date,
           ...itemData,
         };
+
+        // Schedule notification for new task
+        scheduleTaskNotification(newItem, state.settings.notificationsEnabled);
 
         if (dayPlan) {
           return {
@@ -210,6 +229,9 @@ export const useBalanceStore = create<AppState>()(
         
         const item = dayPlan.items.find(i => i.id === itemId);
         if (!item) return state;
+
+        // Cancel notification when task is completed
+        cancelTaskNotification(itemId);
         
         // Calculate minutes if not provided
         let finalMinutes = minutes;
@@ -265,9 +287,19 @@ export const useBalanceStore = create<AppState>()(
       })),
 
       // Settings actions
-      updateSettings: (updates) => set((state) => ({
-        settings: { ...state.settings, ...updates },
-      })),
+      updateSettings: (updates) => set((state) => {
+        const newSettings = { ...state.settings, ...updates };
+        
+        // If notifications were toggled, reschedule or cancel all
+        if ('notificationsEnabled' in updates) {
+          const allTasks = Object.values(state.dayPlans).flatMap(plan => plan.items);
+          rescheduleAllTasks(allTasks, newSettings.notificationsEnabled);
+        }
+        
+        return {
+          settings: newSettings,
+        };
+      }),
 
       // Complete onboarding
       completeOnboarding: (userName, newPillars) => set((state) => {
