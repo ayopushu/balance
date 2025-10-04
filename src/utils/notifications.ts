@@ -16,37 +16,72 @@ export const scheduleNotification = (task: DayItem) => {
 
   // Don't schedule if no time or already completed
   if (!task.start || !task.date || task.status !== 'pending') {
+    console.log('❌ Task skipped - no time or already completed:', task.title);
     return;
   }
 
   // Check browser support and permission
-  if (!('Notification' in window) || Notification.permission !== 'granted') {
+  if (!('Notification' in window)) {
+    console.log('❌ Browser does not support notifications');
+    return;
+  }
+
+  if (Notification.permission !== 'granted') {
+    console.log('❌ Notification permission not granted');
     return;
   }
 
   try {
+    // Get current device time
+    const now = new Date();
+    console.log('📱 Current device time:', now.toLocaleString());
+
     // Parse task time
     const [hours, minutes] = task.start.split(':').map(Number);
     const taskTime = new Date(task.date);
     taskTime.setHours(hours, minutes, 0, 0);
 
+    console.log('⏰ Task scheduled for:', taskTime.toLocaleString());
+    console.log('📋 Task:', task.title);
+
     // Calculate delay
-    const now = new Date();
     const delay = taskTime.getTime() - now.getTime();
 
-    // Only schedule future tasks
-    if (delay > 0) {
-      const timeoutId = window.setTimeout(() => {
-        new Notification(`Time for: ${task.title}`, {
-          body: 'Your task is starting now',
-          icon: '/icon-192.png',
-          tag: task.id,
-        });
-        notifications.delete(task.id);
-      }, delay);
+    console.log('⏱️ Time until notification:');
+    console.log('  - Milliseconds:', delay);
+    console.log('  - Minutes:', Math.round(delay / 1000 / 60));
+    console.log('  - Hours:', Math.round(delay / 1000 / 60 / 60));
 
-      notifications.set(task.id, timeoutId);
+    // Only schedule future tasks
+    if (delay <= 0) {
+      console.log('❌ Task time has already passed');
+      return;
     }
+
+    console.log('✅ Scheduling notification...');
+
+    const timeoutId = window.setTimeout(() => {
+      console.log('🔔 TIME TO SHOW NOTIFICATION!');
+      console.log('📱 Current device time:', new Date().toLocaleString());
+
+      const notification = new Notification(`⏰ ${task.title}`, {
+        body: 'Your task is starting now',
+        icon: '/icon-192.png',
+        tag: task.id,
+        requireInteraction: false,
+      });
+
+      // Handle click
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+
+      notifications.delete(task.id);
+    }, delay);
+
+    notifications.set(task.id, timeoutId);
+    console.log('✅ Notification scheduled successfully!');
   } catch (error) {
     console.error('Error scheduling notification:', error);
   }
@@ -75,11 +110,25 @@ export const cancelAllNotifications = () => {
  * Reschedule all pending tasks
  */
 export const rescheduleAll = (tasks: DayItem[], enabled: boolean) => {
+  console.log('📅 Rescheduling all notifications...');
+  console.log('  - Total tasks:', tasks.length);
+  console.log('  - Enabled:', enabled);
+
   cancelAllNotifications();
 
-  if (!enabled) return;
+  if (!enabled) {
+    console.log('❌ Notifications disabled, skipping');
+    return;
+  }
+
+  if (Notification.permission !== 'granted') {
+    console.log('❌ No notification permission');
+    return;
+  }
 
   const now = new Date();
+  let scheduledCount = 0;
+
   tasks.forEach(task => {
     if (task.status === 'pending' && task.start && task.date) {
       const [hours, minutes] = task.start.split(':').map(Number);
@@ -88,7 +137,10 @@ export const rescheduleAll = (tasks: DayItem[], enabled: boolean) => {
 
       if (taskTime > now) {
         scheduleNotification(task);
+        scheduledCount++;
       }
     }
   });
+
+  console.log(`✅ Scheduled ${scheduledCount} notifications`);
 };
