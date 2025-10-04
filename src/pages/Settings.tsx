@@ -16,6 +16,7 @@ import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { NotificationDebugInfo } from '@/components/NotificationDebugInfo';
 const PILLAR_COLORS = [{
   name: 'Green',
   value: '#4CAF50',
@@ -304,31 +305,37 @@ export const Settings: React.FC = () => {
                 Notifications
               </h3>
               
-              <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
-                <div className="flex items-center space-x-3">
-                  <Bell className="w-5 h-5 text-balance-text-muted" />
-                  <div>
-                    <p className="body-md text-balance-text-primary">Task Reminders</p>
-                    <p className="text-xs text-balance-text-muted mt-0.5">
-                      Get notified when tasks are due
-                    </p>
+              <div className="space-y-4">
+                {/* Toggle */}
+                <div className="flex items-center justify-between p-3 surface-elevated rounded-balance">
+                  <div className="flex items-center space-x-3">
+                    <Bell className="w-5 h-5 text-balance-text-muted" />
+                    <div>
+                      <p className="body-md text-balance-text-primary">Task Reminders</p>
+                      <p className="text-xs text-balance-text-muted mt-0.5">
+                        Get notified when tasks are due
+                      </p>
+                    </div>
                   </div>
-                </div>
-                
-                <button
-                  onClick={handleNotificationToggle}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                    settings.notificationsEnabled ? 'bg-health' : 'bg-gray-600'
-                  }`}
-                  role="switch"
-                  aria-checked={settings.notificationsEnabled}
-                >
-                  <span
-                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      settings.notificationsEnabled ? 'translate-x-6' : 'translate-x-1'
+                  
+                  <button
+                    onClick={handleNotificationToggle}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      settings.notificationsEnabled ? 'bg-health' : 'bg-gray-600'
                     }`}
-                  />
-                </button>
+                    role="switch"
+                    aria-checked={settings.notificationsEnabled}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        settings.notificationsEnabled ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Device Time Display */}
+                <NotificationDebugInfo />
               </div>
             </Card>
           </motion.div>
