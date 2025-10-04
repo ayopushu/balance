@@ -3,8 +3,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Clock, Bell } from 'lucide-react';
+import { Clock, Bell, TestTube } from 'lucide-react';
 import { useBalanceStore } from '@/store';
+import { testNotification } from '@/utils/notifications';
+import { Button } from '@/components/ui/button';
 
 export const NotificationDebugInfo: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -109,6 +111,21 @@ export const NotificationDebugInfo: React.FC = () => {
           {settings.notificationsEnabled ? '✓ Enabled' : '○ Disabled'}
         </span>
       </div>
+
+      {/* Test Notification Button */}
+      {settings.notificationsEnabled && Notification.permission === 'granted' && (
+        <div className="pt-2 border-t border-balance-surface">
+          <Button
+            onClick={testNotification}
+            variant="outline"
+            size="sm"
+            className="w-full"
+          >
+            <TestTube className="w-4 h-4 mr-2" />
+            Send Test Notification Now
+          </Button>
+        </div>
+      )}
 
       {/* Scheduled Notifications */}
       {settings.notificationsEnabled && Notification.permission === 'granted' && (

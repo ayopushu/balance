@@ -63,21 +63,49 @@ export const scheduleNotification = (task: DayItem) => {
     const timeoutId = window.setTimeout(() => {
       console.log('🔔 TIME TO SHOW NOTIFICATION!');
       console.log('📱 Current device time:', new Date().toLocaleString());
+      console.log('📋 Task:', task.title);
 
-      const notification = new Notification(`⏰ ${task.title}`, {
-        body: 'Your task is starting now',
-        icon: '/icon-192.png',
-        tag: task.id,
-        requireInteraction: false,
-      });
+      try {
+        // Double-check permission before creating
+        if (Notification.permission !== 'granted') {
+          console.error('❌ Permission lost! Current permission:', Notification.permission);
+          notifications.delete(task.id);
+          return;
+        }
 
-      // Handle click
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-      };
+        console.log('✅ Creating notification...');
+        const notification = new Notification(`⏰ ${task.title}`, {
+          body: 'Your task is starting now',
+          icon: '/icon-192.png',
+          tag: task.id,
+          requireInteraction: true,
+          silent: false,
+        });
 
-      notifications.delete(task.id);
+        console.log('✅ Notification created successfully!');
+
+        // Handle click
+        notification.onclick = () => {
+          console.log('🖱️ Notification clicked');
+          window.focus();
+          notification.close();
+        };
+
+        // Handle errors
+        notification.onerror = (error) => {
+          console.error('❌ Notification error:', error);
+        };
+
+        // Handle close
+        notification.onclose = () => {
+          console.log('❌ Notification closed');
+        };
+
+        notifications.delete(task.id);
+      } catch (error) {
+        console.error('❌ Failed to create notification:', error);
+        notifications.delete(task.id);
+      }
     }, delay);
 
     notifications.set(task.id, timeoutId);
@@ -104,6 +132,50 @@ export const cancelNotification = (taskId: string) => {
 export const cancelAllNotifications = () => {
   notifications.forEach(timeoutId => clearTimeout(timeoutId));
   notifications.clear();
+};
+
+/**
+ * Test notification - fires immediately
+ */
+export const testNotification = () => {
+  console.log('🧪 Testing notification system...');
+  
+  if (!('Notification' in window)) {
+    console.error('❌ Browser does not support notifications');
+    alert('Your browser does not support notifications');
+    return;
+  }
+
+  if (Notification.permission !== 'granted') {
+    console.error('❌ Notification permission not granted');
+    alert('Notification permission not granted. Please enable in settings.');
+    return;
+  }
+
+  try {
+    console.log('✅ Creating test notification...');
+    const notification = new Notification('🧪 Test Notification', {
+      body: 'If you see this, notifications are working!',
+      icon: '/icon-192.png',
+      requireInteraction: true,
+      silent: false,
+    });
+
+    notification.onclick = () => {
+      console.log('🖱️ Test notification clicked');
+      window.focus();
+      notification.close();
+    };
+
+    notification.onerror = (error) => {
+      console.error('❌ Test notification error:', error);
+    };
+
+    console.log('✅ Test notification created successfully!');
+  } catch (error) {
+    console.error('❌ Failed to create test notification:', error);
+    alert('Failed to create notification: ' + error);
+  }
 };
 
 /**
