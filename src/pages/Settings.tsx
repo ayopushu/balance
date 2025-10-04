@@ -17,6 +17,7 @@ import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { NotificationDebugInfo } from '@/components/NotificationDebugInfo';
+import { requestNotificationPermission } from '@/utils/notifications';
 const PILLAR_COLORS = [{
   name: 'Green',
   value: '#4CAF50',
@@ -73,18 +74,9 @@ export const Settings: React.FC = () => {
   const handleNotificationToggle = async () => {
     if (!settings.notificationsEnabled) {
       // Turning ON
-      if (!('Notification' in window)) {
-        toast({
-          title: "Not supported",
-          description: "Notifications not available on this browser.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      const permission = await Notification.requestPermission();
+      const granted = await requestNotificationPermission();
       
-      if (permission === 'granted') {
+      if (granted) {
         updateSettings({ notificationsEnabled: true });
         toast({
           title: "Notifications enabled",

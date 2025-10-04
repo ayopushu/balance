@@ -5,12 +5,19 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Bell, TestTube } from 'lucide-react';
 import { useBalanceStore } from '@/store';
-import { testNotification } from '@/utils/notifications';
+import { testNotification, checkNotificationPermission } from '@/utils/notifications';
 import { Button } from '@/components/ui/button';
+import { Capacitor } from '@capacitor/core';
 
 export const NotificationDebugInfo: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [hasPermission, setHasPermission] = useState(false);
   const { dayPlans, settings } = useBalanceStore();
+
+  // Check permission on mount
+  useEffect(() => {
+    checkNotificationPermission().then(setHasPermission);
+  }, []);
 
   // Update time every second
   useEffect(() => {
@@ -88,18 +95,21 @@ export const NotificationDebugInfo: React.FC = () => {
         </div>
       </div>
 
-      {/* Permission Status */}
+      {/* Platform Info */}
       <div className="flex items-center justify-between pt-2 border-t border-balance-surface">
+        <span className="text-xs text-balance-text-muted">Platform:</span>
+        <span className="text-xs font-medium text-balance-text-primary">
+          {Capacitor.isNativePlatform() ? '📱 Mobile App' : '🌐 Web Browser'}
+        </span>
+      </div>
+
+      {/* Permission Status */}
+      <div className="flex items-center justify-between border-t border-balance-surface pt-2">
         <span className="text-xs text-balance-text-muted">Permission:</span>
         <span className={`text-xs font-medium ${
-          'Notification' in window && Notification.permission === 'granted'
-            ? 'text-health'
-            : 'text-red-500'
+          hasPermission ? 'text-health' : 'text-red-500'
         }`}>
-          {'Notification' in window 
-            ? Notification.permission === 'granted' ? '✓ Granted' : '✗ ' + Notification.permission
-            : '✗ Not supported'
-          }
+          {hasPermission ? '✓ Granted' : '✗ Not Granted'}
         </span>
       </div>
 
@@ -113,7 +123,7 @@ export const NotificationDebugInfo: React.FC = () => {
       </div>
 
       {/* Test Notification Button */}
-      {settings.notificationsEnabled && Notification.permission === 'granted' && (
+      {settings.notificationsEnabled && hasPermission && (
         <div className="pt-2 border-t border-balance-surface">
           <Button
             onClick={testNotification}
@@ -128,7 +138,7 @@ export const NotificationDebugInfo: React.FC = () => {
       )}
 
       {/* Scheduled Notifications */}
-      {settings.notificationsEnabled && Notification.permission === 'granted' && (
+      {settings.notificationsEnabled && hasPermission && (
         <div className="pt-2 border-t border-balance-surface">
           <div className="flex items-start space-x-3 mb-2">
             <Bell className="w-4 h-4 text-balance-text-muted mt-0.5" />

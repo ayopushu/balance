@@ -1,18 +1,65 @@
 /**
- * Simple notification system for task reminders
+ * Mobile-friendly notification system using Capacitor Local Notifications
  */
 
 import type { DayItem } from '@/store/types';
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
 
-// Store scheduled notifications
+// Store scheduled notification IDs
 const notifications = new Map<string, number>();
+let notificationIdCounter = 1;
+
+/**
+ * Request notification permission
+ */
+export const requestNotificationPermission = async (): Promise<boolean> => {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      // Mobile: Use Capacitor Local Notifications
+      const result = await LocalNotifications.requestPermissions();
+      console.log('📱 Mobile notification permission:', result.display);
+      return result.display === 'granted';
+    } else {
+      // Web: Use Web Notification API
+      if (!('Notification' in window)) {
+        console.error('❌ Browser does not support notifications');
+        return false;
+      }
+      
+      const permission = await Notification.requestPermission();
+      console.log('🌐 Web notification permission:', permission);
+      return permission === 'granted';
+    }
+  } catch (error) {
+    console.error('❌ Error requesting notification permission:', error);
+    return false;
+  }
+};
+
+/**
+ * Check if notifications are permitted
+ */
+export const checkNotificationPermission = async (): Promise<boolean> => {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      const result = await LocalNotifications.checkPermissions();
+      return result.display === 'granted';
+    } else {
+      return 'Notification' in window && Notification.permission === 'granted';
+    }
+  } catch (error) {
+    console.error('❌ Error checking notification permission:', error);
+    return false;
+  }
+};
 
 /**
  * Schedule a notification for a task
  */
-export const scheduleNotification = (task: DayItem) => {
+export const scheduleNotification = async (task: DayItem) => {
   // Cancel existing notification for this task
-  cancelNotification(task.id);
+  await cancelNotification(task.id);
 
   // Don't schedule if no time or already completed
   if (!task.start || !task.date || task.status !== 'pending') {
@@ -20,13 +67,9 @@ export const scheduleNotification = (task: DayItem) => {
     return;
   }
 
-  // Check browser support and permission
-  if (!('Notification' in window)) {
-    console.log('❌ Browser does not support notifications');
-    return;
-  }
-
-  if (Notification.permission !== 'granted') {
+  // Check permission
+  const hasPermission = await checkNotificationPermission();
+  if (!hasPermission) {
     console.log('❌ Notification permission not granted');
     return;
   }
@@ -60,93 +103,123 @@ export const scheduleNotification = (task: DayItem) => {
 
     console.log('✅ Scheduling notification...');
 
-    const timeoutId = window.setTimeout(() => {
-      console.log('🔔 TIME TO SHOW NOTIFICATION!');
-      console.log('📱 Current device time:', new Date().toLocaleString());
-      console.log('📋 Task:', task.title);
+    if (Capacitor.isNativePlatform()) {
+      // Mobile: Use Capacitor Local Notifications
+      const notificationId = notificationIdCounter++;
+      
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: notificationId,
+            title: `⏰ ${task.title}`,
+            body: 'Your task is starting now',
+            schedule: { at: taskTime },
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: { taskId: task.id }
+          }
+        ]
+      });
 
-      try {
-        // Double-check permission before creating
-        if (Notification.permission !== 'granted') {
-          console.error('❌ Permission lost! Current permission:', Notification.permission);
-          notifications.delete(task.id);
-          return;
+      notifications.set(task.id, notificationId);
+      console.log('✅ Mobile notification scheduled with ID:', notificationId);
+    } else {
+      // Web: Use setTimeout with Web Notification API
+      const timeoutId = window.setTimeout(async () => {
+        console.log('🔔 TIME TO SHOW NOTIFICATION!');
+        console.log('📱 Current device time:', new Date().toLocaleString());
+        console.log('📋 Task:', task.title);
+
+        try {
+          const notification = new Notification(`⏰ ${task.title}`, {
+            body: 'Your task is starting now',
+            icon: '/icon-192.png',
+            tag: task.id,
+            requireInteraction: true,
+            silent: false,
+          });
+
+          console.log('✅ Web notification created successfully!');
+
+          notification.onclick = () => {
+            console.log('🖱️ Notification clicked');
+            window.focus();
+            notification.close();
+          };
+        } catch (error) {
+          console.error('❌ Failed to create web notification:', error);
         }
+      }, delay);
 
-        console.log('✅ Creating notification...');
-        const notification = new Notification(`⏰ ${task.title}`, {
-          body: 'Your task is starting now',
-          icon: '/icon-192.png',
-          tag: task.id,
-          requireInteraction: true,
-          silent: false,
-        });
-
-        console.log('✅ Notification created successfully!');
-
-        // Handle click
-        notification.onclick = () => {
-          console.log('🖱️ Notification clicked');
-          window.focus();
-          notification.close();
-        };
-
-        // Handle errors
-        notification.onerror = (error) => {
-          console.error('❌ Notification error:', error);
-        };
-
-        // Handle close
-        notification.onclose = () => {
-          console.log('❌ Notification closed');
-        };
-
-        notifications.delete(task.id);
-      } catch (error) {
-        console.error('❌ Failed to create notification:', error);
-        notifications.delete(task.id);
-      }
-    }, delay);
-
-    notifications.set(task.id, timeoutId);
-    console.log('✅ Notification scheduled successfully!');
+      notifications.set(task.id, timeoutId);
+      console.log('✅ Web notification scheduled with timeout ID:', timeoutId);
+    }
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+    console.error('❌ Error scheduling notification:', error);
   }
 };
 
 /**
  * Cancel a notification
  */
-export const cancelNotification = (taskId: string) => {
-  const timeoutId = notifications.get(taskId);
-  if (timeoutId) {
-    clearTimeout(timeoutId);
+export const cancelNotification = async (taskId: string) => {
+  const notificationId = notifications.get(taskId);
+  if (!notificationId) return;
+
+  try {
+    if (Capacitor.isNativePlatform()) {
+      // Mobile: Cancel Capacitor notification
+      await LocalNotifications.cancel({
+        notifications: [{ id: notificationId }]
+      });
+      console.log('🗑️ Cancelled mobile notification ID:', notificationId);
+    } else {
+      // Web: Clear timeout
+      clearTimeout(notificationId);
+      console.log('🗑️ Cancelled web timeout ID:', notificationId);
+    }
+    
     notifications.delete(taskId);
+  } catch (error) {
+    console.error('❌ Error cancelling notification:', error);
   }
 };
 
 /**
  * Cancel all notifications
  */
-export const cancelAllNotifications = () => {
-  notifications.forEach(timeoutId => clearTimeout(timeoutId));
-  notifications.clear();
+export const cancelAllNotifications = async () => {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      // Mobile: Cancel all pending notifications
+      const pending = await LocalNotifications.getPending();
+      if (pending.notifications.length > 0) {
+        await LocalNotifications.cancel({
+          notifications: pending.notifications
+        });
+      }
+      console.log('🗑️ Cancelled all mobile notifications');
+    } else {
+      // Web: Clear all timeouts
+      notifications.forEach(timeoutId => clearTimeout(timeoutId));
+      console.log('🗑️ Cancelled all web timeouts');
+    }
+    
+    notifications.clear();
+  } catch (error) {
+    console.error('❌ Error cancelling all notifications:', error);
+  }
 };
 
 /**
  * Test notification - fires immediately
  */
-export const testNotification = () => {
+export const testNotification = async () => {
   console.log('🧪 Testing notification system...');
   
-  if (!('Notification' in window)) {
-    console.error('❌ Browser does not support notifications');
-    alert('Your browser does not support notifications');
-    return;
-  }
-
-  if (Notification.permission !== 'granted') {
+  const hasPermission = await checkNotificationPermission();
+  if (!hasPermission) {
     console.error('❌ Notification permission not granted');
     alert('Notification permission not granted. Please enable in settings.');
     return;
@@ -154,24 +227,42 @@ export const testNotification = () => {
 
   try {
     console.log('✅ Creating test notification...');
-    const notification = new Notification('🧪 Test Notification', {
-      body: 'If you see this, notifications are working!',
-      icon: '/icon-192.png',
-      requireInteraction: true,
-      silent: false,
-    });
+    
+    if (Capacitor.isNativePlatform()) {
+      // Mobile: Use Capacitor Local Notifications
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: notificationIdCounter++,
+            title: '🧪 Test Notification',
+            body: 'If you see this, notifications are working!',
+            schedule: { at: new Date(Date.now() + 1000) }, // 1 second from now
+            sound: undefined,
+            attachments: undefined,
+            actionTypeId: '',
+            extra: null
+          }
+        ]
+      });
+      console.log('✅ Mobile test notification scheduled!');
+      alert('Test notification will appear in 1 second!');
+    } else {
+      // Web: Use Web Notification API
+      const notification = new Notification('🧪 Test Notification', {
+        body: 'If you see this, notifications are working!',
+        icon: '/icon-192.png',
+        requireInteraction: true,
+        silent: false,
+      });
 
-    notification.onclick = () => {
-      console.log('🖱️ Test notification clicked');
-      window.focus();
-      notification.close();
-    };
+      notification.onclick = () => {
+        console.log('🖱️ Test notification clicked');
+        window.focus();
+        notification.close();
+      };
 
-    notification.onerror = (error) => {
-      console.error('❌ Test notification error:', error);
-    };
-
-    console.log('✅ Test notification created successfully!');
+      console.log('✅ Web test notification created successfully!');
+    }
   } catch (error) {
     console.error('❌ Failed to create test notification:', error);
     alert('Failed to create notification: ' + error);
@@ -181,19 +272,20 @@ export const testNotification = () => {
 /**
  * Reschedule all pending tasks
  */
-export const rescheduleAll = (tasks: DayItem[], enabled: boolean) => {
+export const rescheduleAll = async (tasks: DayItem[], enabled: boolean) => {
   console.log('📅 Rescheduling all notifications...');
   console.log('  - Total tasks:', tasks.length);
   console.log('  - Enabled:', enabled);
 
-  cancelAllNotifications();
+  await cancelAllNotifications();
 
   if (!enabled) {
     console.log('❌ Notifications disabled, skipping');
     return;
   }
 
-  if (Notification.permission !== 'granted') {
+  const hasPermission = await checkNotificationPermission();
+  if (!hasPermission) {
     console.log('❌ No notification permission');
     return;
   }
@@ -201,18 +293,18 @@ export const rescheduleAll = (tasks: DayItem[], enabled: boolean) => {
   const now = new Date();
   let scheduledCount = 0;
 
-  tasks.forEach(task => {
+  for (const task of tasks) {
     if (task.status === 'pending' && task.start && task.date) {
       const [hours, minutes] = task.start.split(':').map(Number);
       const taskTime = new Date(task.date);
       taskTime.setHours(hours, minutes, 0, 0);
 
       if (taskTime > now) {
-        scheduleNotification(task);
+        await scheduleNotification(task);
         scheduledCount++;
       }
     }
-  });
+  }
 
   console.log(`✅ Scheduled ${scheduledCount} notifications`);
 };
