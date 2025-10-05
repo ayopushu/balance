@@ -16,7 +16,6 @@ import { useBalanceStore } from '@/store';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { NotificationDebugInfo } from '@/components/NotificationDebugInfo';
 import { requestNotificationPermission } from '@/utils/notifications';
 const PILLAR_COLORS = [{
   name: 'Green',
@@ -325,9 +324,6 @@ export const Settings: React.FC = () => {
                     />
                   </button>
                 </div>
-
-                {/* Device Time Display */}
-                <NotificationDebugInfo />
               </div>
             </Card>
           </motion.div>
