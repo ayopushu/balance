@@ -125,28 +125,27 @@ export const scheduleNotification = async (task: DayItem) => {
       notifications.set(task.id, notificationId);
       console.log('✅ Mobile notification scheduled with ID:', notificationId);
     } else {
-      // Web: Use setTimeout with Web Notification API
+      // Web: Use setTimeout with Service Worker Notification API
       const timeoutId = window.setTimeout(async () => {
         console.log('🔔 TIME TO SHOW NOTIFICATION!');
         console.log('📱 Current device time:', new Date().toLocaleString());
         console.log('📋 Task:', task.title);
 
         try {
-          const notification = new Notification(`⏰ ${task.title}`, {
+          // Get Service Worker registration
+          const registration = await navigator.serviceWorker.ready;
+          
+          // Show notification through Service Worker
+          await registration.showNotification(`⏰ ${task.title}`, {
             body: 'Your task is starting now',
             icon: '/icon-192.png',
+            badge: '/icon-192.png',
             tag: task.id,
-            requireInteraction: true,
-            silent: false,
+            requireInteraction: false,
+            data: { taskId: task.id }
           });
 
           console.log('✅ Web notification created successfully!');
-
-          notification.onclick = () => {
-            console.log('🖱️ Notification clicked');
-            window.focus();
-            notification.close();
-          };
         } catch (error) {
           console.error('❌ Failed to create web notification:', error);
         }
@@ -247,21 +246,24 @@ export const testNotification = async () => {
       console.log('✅ Mobile test notification scheduled!');
       alert('Test notification will appear in 1 second!');
     } else {
-      // Web: Use Web Notification API
-      const notification = new Notification('🧪 Test Notification', {
-        body: 'If you see this, notifications are working!',
-        icon: '/icon-192.png',
-        requireInteraction: true,
-        silent: false,
-      });
+      // Web: Use Service Worker Notification API
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        
+        await registration.showNotification('🧪 Test Notification', {
+          body: 'If you see this, notifications are working!',
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          requireInteraction: false,
+          tag: 'test-notification',
+          data: { type: 'test' }
+        });
 
-      notification.onclick = () => {
-        console.log('🖱️ Test notification clicked');
-        window.focus();
-        notification.close();
-      };
-
-      console.log('✅ Web test notification created successfully!');
+        console.log('✅ Web test notification created successfully!');
+      } catch (error) {
+        console.error('❌ Failed to create test notification:', error);
+        alert('Failed to create notification: ' + error);
+      }
     }
   } catch (error) {
     console.error('❌ Failed to create test notification:', error);
